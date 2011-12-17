@@ -1,4 +1,5 @@
-set textwidth=78
+" 必要であればつける
+" set textwidth=78
 
 " set number
 set backspace=indent,eol,start
