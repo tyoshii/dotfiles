@@ -1,0 +1,24 @@
+PS1='[\u@\w]\n\$ '
+
+umask 022
+
+export PAGER=less
+export LESS='-X -i -P ?f%f:(stdin).  ?lb%lb?L/%L..  [?eEOF:?pb%pb¥%..]'
+export JLESSCHARSET=japanese-ujis
+
+# MacPort
+export PATH=/opt/local/bin:/opt/local/sbin:$PATH:$HOME/bin
+
+# RVM
+[ -s ${HOME}/.rvm/scripts/rvm ] && source ${HOME}/.rvm/scripts/rvm
+
+export EDITOR=/usr/bin/vim
+
+alias cpanlist="find `perl -e 'print \"@INC\"'` -name '*.pm' -print"
+alias ls="ls -F"
+
+#perlbrew
+source /Users/tyoshii/perl5/perlbrew/etc/bashrc
+
+
+rvm use ruby-1.9.2
