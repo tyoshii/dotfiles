@@ -5,3 +5,5 @@
 [user]
 	name = Takanao Yoshii
 	email = tyoshii716@gmail.com
+[push]
+	default = simple
