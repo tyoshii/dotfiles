@@ -1,0 +1,7 @@
+[alias]
+	s = status
+	d = diff
+	cm = commit -m
+[user]
+	name = Takanao Yoshii
+	email = tyoshii716@gmail.com
