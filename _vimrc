@@ -30,7 +30,17 @@ set ambiwidth=double
 set tabstop=4
 set expandtab
 
-au BufReadPost,BufNewFile *.t :setlocal filetype=perl
+if exists("did_load_filetypes")
+  finish
+endif
+augroup filetypedetect
+ au BufRead,BufNewFile *.py setfiletype python
+ au BufRead,BufNewFile *.php setfiletype php
+ au BufRead,BufNewFile *.twig set filetype=htmljinja
+
+ " *.t perl test file
+ au BufReadPost,BufNewFile *.t :setlocal filetype=perl
+augroup END
 
 autocmd FileType cpp set tabstop=2
 autocmd FileType php set tabstop=2
