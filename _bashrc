@@ -9,21 +9,13 @@ export PAGER=less
 export LESS='-X -i -P ?f%f:(stdin).  ?lb%lb?L/%L..  [?eEOF:?pb%pb¥%..]'
 export JLESSCHARSET=japanese-ujis
 
-# MacPort
-export PATH=/opt/local/bin:/opt/local/sbin:$PATH:$HOME/bin
-
-# RVM
-[ -s ${HOME}/.rvm/scripts/rvm ] && source ${HOME}/.rvm/scripts/rvm
-
 export EDITOR=/usr/bin/vim
 
-alias cpanlist="find `perl -e 'print \"@INC\"'` -name '*.pm' -print"
-alias ls="ls -F"
+alias ls="ls -CF"
+alias grep="grep --color=auto"
 
 #perlbrew
 PERLBREW_BASHRC="$HOME/perl5/perlbrew/etc/bashrc"
 if [ -f ${PERLBREW_BASHRC} ]; then
     source ${PERLBREW_BASHRC}
 fi
-
-# rvm use ruby-1.9.2

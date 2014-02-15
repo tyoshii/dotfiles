@@ -1,7 +1,16 @@
 [alias]
+	p = pull
 	s = status
-	d = diff
+    graph = log --graph --date-order -C -M --pretty=format:\"<%h> %ad [%an] %Cgreen%d%Creset %s\" --all --date=short
+	b = branch
+	ba = branch -a
+	d = diff --color
+	co = checkout
 	cm = commit -m
+	a = add .
+[core]
+	editor = /usr/bin/vim
+	excludesfile = /home/tyoshii/.gitignore
 [user]
 	name = Takanao Yoshii
 	email = tyoshii716@gmail.com

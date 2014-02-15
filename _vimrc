@@ -1,16 +1,8 @@
-" 必要であればつける
-" set textwidth=78
-
-" set number
 set backspace=indent,eol,start
-
-" viとの互換性OFF
 set nocompatible
 
-" 何だかんだでいらない
 syntax on
 
-" カラースキーム（一応）
 "colorscheme pablo
 hi Constant cterm=bold
 hi Special cterm=bold
@@ -30,13 +22,11 @@ hi StorageClass cterm=bold ctermfg=yellow
 hi Structure cterm=bold ctermfg=yellow
 "hi Delimiter cterm=none ctermfg=none
 
-" 文字コード（デフォルトUTF-8. euc-jpのファイルはeuc-jpなはず）
 set termencoding=utf-8
 set encoding=utf-8
 set fileencodings=utf-8,cp932,iso-2022-jp,euc-jp
 set ambiwidth=double
 
-" タブ系
 set tabstop=4
 set expandtab
 
@@ -45,6 +35,7 @@ au BufReadPost,BufNewFile *.t :setlocal filetype=perl
 autocmd FileType cpp set tabstop=2
 autocmd FileType php set tabstop=2
 autocmd FileType css set tabstop=2
+autocmd FileType ant set tabstop=2
 autocmd FileType javascript set tabstop=2
 
 " 表示関連
