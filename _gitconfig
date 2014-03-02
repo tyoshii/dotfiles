@@ -8,11 +8,16 @@
 	co = checkout
 	cm = commit -m
 	a = add .
+	ame = commit --amend
+	amend = commit --amend
 [core]
 	editor = /usr/bin/vim
 	excludesfile = /home/tyoshii/.gitignore
+	pager = less -r
 [user]
 	name = Takanao Yoshii
 	email = tyoshii716@gmail.com
 [push]
 	default = simple
+[color]
+	ui = true
