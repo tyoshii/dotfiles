@@ -19,3 +19,6 @@ PERLBREW_BASHRC="$HOME/perl5/perlbrew/etc/bashrc"
 if [ -f ${PERLBREW_BASHRC} ]; then
     source ${PERLBREW_BASHRC}
 fi
+
+#golang
+export PATH=$PATH:/usr/local/go/bin
