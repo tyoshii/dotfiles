@@ -10,6 +10,7 @@
 	a = add .
 	ame = commit --amend
 	amend = commit --amend
+	po = push origin
 [core]
 	editor = /usr/bin/vim
 	excludesfile = /home/tyoshii/.gitignore
@@ -18,6 +19,6 @@
 	name = Takanao Yoshii
 	email = tyoshii716@gmail.com
 [push]
-	default = simple
+	default = current
 [color]
 	ui = true
