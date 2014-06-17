@@ -11,6 +11,7 @@
 	ame = commit --amend
 	amend = commit --amend
 	po = push origin
+	sm = submodule
 [core]
 	editor = /usr/bin/vim
 	excludesfile = /home/tyoshii/.gitignore
