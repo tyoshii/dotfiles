@@ -1,0 +1,7 @@
+--exec "/usr/local/bin/perl -Ilib -It/lib"
+--recurse
+--color
+--merge
+--timer
+--state=save
+-w
