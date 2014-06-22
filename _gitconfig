@@ -12,6 +12,10 @@
 	amend = commit --amend
 	po = push origin
 	sm = submodule
+	fp = fetch --prune
+	c = config --global
+	pu = pull
+	dlb = !git branch --merged | grep -v \\* | xargs -I % git branch -d %
 [core]
 	editor = /usr/bin/vim
 	excludesfile = /home/tyoshii/.gitignore
