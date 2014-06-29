@@ -1,0 +1,29 @@
+[alias]
+	p = pull
+	s = status
+    graph = log --graph --date-order -C -M --pretty=format:\"<%h> %ad [%an] %Cgreen%d%Creset %s\" --all --date=short
+	b = branch
+	ba = branch -a
+	d = diff --color
+	co = checkout
+	cm = commit -m
+    cam = commit -a -m
+	a = add .
+	ame = commit --amend
+	po = push origin
+	sm = submodule
+	fp = fetch --prune
+	c = config --global
+	pu = pull
+	dlb = !git branch --merged | grep -v \\* | xargs -I % git branch -d %
+[core]
+	editor = /usr/bin/vim
+	excludesfile = /home/tyoshii/.gitignore
+	pager = less -r
+[user]
+	name = Takanao Yoshii
+	email = tyoshii716@gmail.com
+[push]
+	default = current
+[color]
+	ui = true
