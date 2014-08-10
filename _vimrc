@@ -1,5 +1,5 @@
-set backspace=indent,eol,start
 set nocompatible
+set backspace=indent,eol,start
 
 syntax on
 
@@ -27,23 +27,13 @@ set encoding=utf-8
 set fileencodings=utf-8,cp932,iso-2022-jp,euc-jp
 set ambiwidth=double
 
+" tab
 set tabstop=4
 set expandtab
-
-if exists("did_load_filetypes")
-  finish
-endif
-augroup filetypedetect
- au BufRead,BufNewFile *.py setfiletype python
- au BufRead,BufNewFile *.php setfiletype php
- au BufRead,BufNewFile *.twig set filetype=htmljinja
-
- " *.t perl test file
- au BufReadPost,BufNewFile *.t :setlocal filetype=perl
-augroup END
-
 autocmd FileType cpp set tabstop=2
 autocmd FileType php set tabstop=2
+autocmd FileType html set tabstop=2
+autocmd FileType htmljinja set tabstop=2
 autocmd FileType css set tabstop=2
 autocmd FileType ant set tabstop=2
 autocmd FileType javascript set tabstop=2
@@ -92,3 +82,4 @@ endfunction
 " git
 autocmd BufNewFile,BufRead COMMIT_EDITMSG set filetype=git
 autocmd FileType git :set fileencoding=utf-8
+
