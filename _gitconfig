@@ -6,9 +6,9 @@
 	ba = branch -a
 	d = diff --color
 	co = checkout
-	cm = commit -am
+	cm = commit -m
 	a = add .
-	ame = commit -a --amend
+	ame = commit --amend
 	po = push origin
 	sm = submodule
 	fp = fetch --prune
