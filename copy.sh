@@ -1,12 +1,20 @@
 #!/bin/bash
 
-cp _vimrc ~/.vimrc
-cp _bashrc ~/.bashrc
-cp _gitconfig ~/.gitconfig
-cp _gitignore ~/.gitignore
+rm ~/.vimrc
+rm ~/.bashrc
+rm ~/.gitconfig
+rm ~/.gitignore
+rm -rf ~/.vim
 
-mkdir -p ~/.vim/syntax/
-cp _vim/filetype.vim ~/.vim/
-cp _vim/syntax/* ~/.vim/syntax/
+PWD=`pwd`
+
+ln -s $PWD/_vimrc ~/.vimrc
+ln -s $PWD/_bashrc ~/.bashrc
+ln -s $PWD/_gitconfig ~/.gitconfig
+ln -s $PWD/_gitignore ~/.gitignore
+
+mkdir -p ~/.vim/syntax
+ln -s $PWD/_vim/filetype.vim ~/.vim/filetype.vim
+ln -s $PWD/_vim/syntax ~/.vim/syntax
 
 sh golang.sh
