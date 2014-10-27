@@ -23,3 +23,6 @@ fi
 #golang
 export GOROOT=/usr/local/go
 export PATH=$PATH:$GOROOT/bin
+
+# brew php55
+export PATH="$(brew --prefix homebrew/php/php55)/bin:$PATH"

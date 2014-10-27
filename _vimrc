@@ -21,6 +21,9 @@ hi Directory cterm=bold ctermfg=DarkRed
 hi StorageClass cterm=bold ctermfg=yellow
 hi Structure cterm=bold ctermfg=yellow
 "hi Delimiter cterm=none ctermfg=none
+highlight Pmenu ctermbg=4
+highlight PmenuSel ctermbg=1
+highlight PMenuSbar ctermbg=4
 
 set termencoding=utf-8
 set encoding=utf-8
@@ -32,6 +35,7 @@ set tabstop=4
 set expandtab
 autocmd FileType cpp set tabstop=2
 autocmd FileType php set tabstop=2
+autocmd FileType php set noexpandtab
 autocmd FileType html set tabstop=2
 autocmd FileType htmljinja set tabstop=2
 autocmd FileType css set tabstop=2

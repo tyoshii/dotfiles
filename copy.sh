@@ -13,7 +13,7 @@ ln -s $PWD/_bashrc ~/.bashrc
 ln -s $PWD/_gitconfig ~/.gitconfig
 ln -s $PWD/_gitignore ~/.gitignore
 
-mkdir -p ~/.vim/syntax
+mkdir -p ~/.vim/
 ln -s $PWD/_vim/filetype.vim ~/.vim/filetype.vim
 ln -s $PWD/_vim/syntax ~/.vim/syntax
 

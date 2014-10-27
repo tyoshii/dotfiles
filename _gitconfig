@@ -15,6 +15,7 @@
 	c = config --global
 	pu = pull
 	dlb = !git branch --merged | grep -v \\* | xargs -I % git branch -d %
+	cv = commit -v
 [core]
 	editor = /usr/bin/vim
 	excludesfile = /home/tyoshii/.gitignore
