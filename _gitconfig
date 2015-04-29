@@ -12,13 +12,14 @@
 	po = push origin
 	sm = submodule
 	fp = fetch --prune
-	c = config --global
+	c = commit
 	pu = pull
 	dlb = !git branch --merged | grep -v \\* | xargs -I % git branch -d %
 	cv = commit -v
+	con = config --global
 [core]
 	editor = /usr/bin/vim
-	excludesfile = /home/tyoshii/.gitignore
+	excludesfile = ~/.gitignore
 	pager = less -r
 [user]
 	name = Takanao Yoshii
