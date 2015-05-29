@@ -29,3 +29,11 @@ export PATH="$(brew --prefix homebrew/php/php55)/bin:$PATH"
 
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
+
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+
+# brew cask
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+
+# tmux attach
+alias ta="tmux attach"
