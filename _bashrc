@@ -11,6 +11,8 @@ export JLESSCHARSET=japanese-ujis
 
 export EDITOR=/usr/bin/vim
 
+export PATH=/usr/local:$PATH
+
 alias ls="ls -CF"
 alias grep="grep --color=auto"
 
