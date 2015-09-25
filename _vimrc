@@ -87,3 +87,9 @@ endfunction
 autocmd BufNewFile,BufRead COMMIT_EDITMSG set filetype=git
 autocmd FileType git :set fileencoding=utf-8
 
+" 行末の空白をハイライト
+augroup HighlightTrailingSpaces
+  autocmd!
+  autocmd VimEnter,WinEnter,ColorScheme * highlight TrailingSpaces term=underline guibg=Red ctermbg=Red
+  autocmd VimEnter,WinEnter * match TrailingSpaces /\s\+$/
+augroup END

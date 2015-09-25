@@ -23,7 +23,7 @@
 	pager = less -r
 [user]
 	name = Takanao Yoshii
-	email = tyoshii716@gmail.com
+	email = tyoshii@yahoo-corp.jp
 [push]
 	default = current
 [color]
