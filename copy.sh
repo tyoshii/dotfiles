@@ -1,15 +1,29 @@
 #!/bin/bash
 
-rm ~/.vimrc
-rm ~/.bashrc
-rm ~/.gitconfig
-rm ~/.gitignore
-rm -rf ~/.vim
+if [ -e ~/.vimrc ]; then
+    rm ~/.vimrc
+fi
+if [ -e ~/.bashrc ]; then
+    rm ~/.bashrc
+fi
+if [ -e ~/.bash_profile ]; then
+    rm ~/.bash_profile
+fi
+if [ -e ~/.gitconfig ]; then
+    rm ~/.gitconfig
+fi
+if [ -e ~/.gitignore ]; then
+    rm ~/.gitignore
+fi
+if [ -e ~/.vim ]; then
+    rm -rf ~/.vim
+fi
 
 PWD=`pwd`
 
 ln -s $PWD/_vimrc ~/.vimrc
 ln -s $PWD/_bashrc ~/.bashrc
+ln -s $PWD/_bash_profile ~/.bash_profile
 ln -s $PWD/_gitconfig ~/.gitconfig
 ln -s $PWD/_gitignore ~/.gitignore
 
