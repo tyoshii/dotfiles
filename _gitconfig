@@ -23,8 +23,10 @@
 	pager = less -r
 [user]
 	name = Takanao Yoshii
-	email = tyoshii@yahoo-corp.jp
+	email = tyoshii716@gmail.com
 [push]
 	default = current
 [color]
 	ui = true
+[include]
+    path = ~/.gitconfig.local
