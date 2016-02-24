@@ -23,9 +23,7 @@ fi
 PWD=`pwd`
 
 # install neobundle
-curl https://raw.githubusercontent.com/Shougo/neobundle.vim/master/bin/install.sh > install.sh
-sh ./install.sh
-rm install.sh
+sh $PWD/neobundle.vim.sh
 
 # symbolic link
 ln -s $PWD/_vimrc ~/.vimrc
