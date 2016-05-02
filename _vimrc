@@ -58,6 +58,9 @@ hi Directory cterm=bold ctermfg=DarkRed
 hi StorageClass cterm=bold ctermfg=yellow
 hi Structure cterm=bold ctermfg=yellow
 "hi Delimiter cterm=none ctermfg=none
+highlight Pmenu ctermbg=4
+highlight PmenuSel ctermbg=1
+highlight PMenuSbar ctermbg=4
 
 set termencoding=utf-8
 set encoding=utf-8
@@ -69,6 +72,8 @@ set tabstop=4
 set expandtab
 autocmd FileType cpp set tabstop=2
 autocmd FileType php set tabstop=2
+autocmd FileType php set noexpandtab
+autocmd FileType ruby set tabstop=2
 autocmd FileType html set tabstop=2
 autocmd FileType htmljinja set tabstop=2
 autocmd FileType css set tabstop=2
@@ -85,7 +90,7 @@ set statusline=%y%{GetStatusEx()}%F%m%r%=<%l:%c>
 hi StatusLine term=NONE cterm=NONE ctermfg=black ctermbg=white
 
 " コマンドライン補完
-set wildmenu 
+set wildmenu
 set wildmode=list:longest
 
 " 外部編集された際自リロ
@@ -120,3 +125,48 @@ endfunction
 autocmd BufNewFile,BufRead COMMIT_EDITMSG set filetype=git
 autocmd FileType git :set fileencoding=utf-8
 
+" 行末の空白をハイライト
+augroup HighlightTrailingSpaces
+  autocmd!
+  autocmd VimEnter,WinEnter,ColorScheme * highlight TrailingSpaces term=underline guibg=Red ctermbg=Red
+  autocmd VimEnter,WinEnter * match TrailingSpaces /\s\+$/
+augroup END
+
+" NeoBundle
+ " Note: Skip initialization for vim-tiny or vim-small.
+ if 0 | endif
+
+ if has('vim_starting')
+   if &compatible
+     set nocompatible               " Be iMproved
+   endif
+
+   " Required:
+   set runtimepath+=~/.vim/bundle/neobundle.vim/
+ endif
+
+ " Required:
+ call neobundle#begin(expand('~/.vim/bundle/'))
+
+ " Let NeoBundle manage NeoBundle
+ " Required:
+ NeoBundleFetch 'Shougo/neobundle.vim'
+
+ " My Bundles here:
+ " Refer to |:NeoBundle-examples|.
+ " Note: You don't set neobundle setting in .gvimrc!
+
+ " rubocop
+ NeoBundle 'scrooloose/syntastic'
+ let g:syntastic_mode_map = { 'mode': 'passive',
+             \ 'active_filetypes': ['ruby'] }
+ let g:syntastic_ruby_checkers = ['rubocop']
+
+ call neobundle#end()
+
+ " Required:
+ filetype plugin indent on
+
+ " If there are uninstalled bundles found on startup,
+ " this will conveniently prompt you to install them.
+ NeoBundleCheck
