@@ -1,3 +1,40 @@
+" NeoBundel
+set nocompatible
+filetype plugin indent off
+
+if has('vim_starting')
+  set runtimepath+=~/.vim/bundle/neobundle.vim
+endif
+
+call neobundle#begin(expand('~/.vim/bundle'))
+
+NeoBundleFetch 'Shougo/neobundle.vim'
+
+call neobundle#end()
+
+filetype plugin indent on
+
+NeoBundleCheck
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+".local.vim
+augroup vimrc-local
+  autocmd!
+  autocmd BufNewFile,BufReadPost * call s:vimrc_local(expand('<afile>:p:h'))
+  autocmd BufReadPre .local.vim set ft=vim
+augroup END
+
+function! s:vimrc_local(loc)
+  let files = findfile('.local.vim', escape(a:loc, ' ') . ';', -1)
+  for i in reverse(filter(files, 'filereadable(v:val)'))
+    source `=i`
+  endfor
+endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set modeline
 set nocompatible
 set backspace=indent,eol,start
 
