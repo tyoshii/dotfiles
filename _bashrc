@@ -43,6 +43,9 @@ export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 # tmux attach
 alias ta="tmux attach"
 
+# vagrant
+alias va="vagrant"
+
 if [ -e "${HOME}/.bashrc_local" ]; then
   source "${HOME}/.bashrc_local"
 fi
