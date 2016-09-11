@@ -1,23 +1,3 @@
-" NeoBundel
-set nocompatible
-filetype plugin indent off
-
-if has('vim_starting')
-  set runtimepath+=~/.vim/bundle/neobundle.vim
-endif
-
-call neobundle#begin(expand('~/.vim/bundle'))
-
-NeoBundleFetch 'Shougo/neobundle.vim'
-
-call neobundle#end()
-
-filetype plugin indent on
-
-NeoBundleCheck
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 ".local.vim
 augroup vimrc-local
   autocmd!
@@ -155,6 +135,33 @@ augroup END
  " My Bundles here:
  " Refer to |:NeoBundle-examples|.
  " Note: You don't set neobundle setting in .gvimrc!
+
+ " snippet
+ NeoBundle 'Shougo/neocomplcache'
+ NeoBundle 'Shougo/neosnippet'
+ NeoBundle 'Shougo/neosnippet-snippets'
+
+ "" snippet keybind
+ " Plugin key-mappings.
+ imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+ smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+ xmap <C-k>     <Plug>(neosnippet_expand_target)
+ 
+ " SuperTab like snippets behavior.
+ "imap <expr><TAB>
+ " \ pumvisible() ? "\<C-n>" :
+ " \ neosnippet#expandable_or_jumpable() ?
+ " \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+ \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+ 
+ " For conceal markers.
+ if has('conceal')
+   set conceallevel=2 concealcursor=niv
+   endif
+ 
+ "" snippet dir
+ let g:neosnippet#snippets_directory='~/.vim/bundle/neosnippet-snippets/snippets/'
 
  " rubocop
  NeoBundle 'scrooloose/syntastic'
