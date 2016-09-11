@@ -161,7 +161,7 @@ augroup END
    endif
  
  "" snippet dir
- let g:neosnippet#snippets_directory='~/.vim/bundle/neosnippet-snippets/snippets/'
+ let g:neosnippet#snippets_directory='~/.vim/snippets/'
 
  " rubocop
  NeoBundle 'scrooloose/syntastic'

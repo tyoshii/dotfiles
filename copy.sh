@@ -35,9 +35,7 @@ ln -s $PWD/_gitignore ~/.gitignore
 mkdir -p ~/.vim/
 ln -s $PWD/_vim/filetype.vim ~/.vim/filetype.vim
 ln -s $PWD/_vim/syntax ~/.vim/syntax
-
-mkdir -p ~/.vim/bundle/neosnippet-snippets/neosnippets/
-ln -s $PWD/_vim/snippets ~/.vim/bundle/neosnippet-snippets/snippets
+ln -s $PWD/_vim/snippets ~/.vim/snippets
 
 # about golang
 sh golang.sh
