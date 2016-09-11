@@ -168,10 +168,6 @@ snippet var_dump
 options head
   var_dump(${0:TARGET});
 
-snippet p
-options head
-  print_r(${1});
-
 snippet echo
 options head
 	echo "${1:#:string}";
@@ -600,10 +596,6 @@ options word
 snippet id
 options word
     id="${1}"${2}
-
-snippet class
-options word
-    class="${1}"${2}
 
 snippet pclass
 options word
