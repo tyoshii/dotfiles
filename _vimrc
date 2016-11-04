@@ -105,6 +105,18 @@ endfunction
 autocmd BufNewFile,BufRead COMMIT_EDITMSG set filetype=git
 autocmd FileType git :set fileencoding=utf-8
 
+" ejs
+autocmd BufNewFile,BufRead *.ejs set filetype=ejs
+autocmd BufNewFile,BufRead *._ejs set filetype=ejs
+
+function! s:DetectEjs()
+    if getline(1) =~ '^#!.*\<ejs\>'
+        set filetype=ejs
+    endif
+endfunction
+
+autocmd BufNewFile,BufRead * call s:DetectEjs()
+
 " 行末の空白をハイライト
 augroup HighlightTrailingSpaces
   autocmd!
@@ -162,6 +174,9 @@ augroup END
  
  "" snippet dir
  let g:neosnippet#snippets_directory='~/.vim/snippets/'
+
+ " ejs syntax
+ NeoBundle 'nikvdp/ejs-syntax'
 
  " rubocop
  NeoBundle 'scrooloose/syntastic'

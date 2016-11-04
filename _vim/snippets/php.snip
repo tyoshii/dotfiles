@@ -12,6 +12,10 @@ abbr function () {}
 		${3:TARGET}
 	}
 
+snippet redirect
+    header('Location: ${1:/}');
+    exit;
+
 snippet php
 	<?php
 	${1:TARGET}
@@ -197,7 +201,7 @@ snippet foreach-hashmap
 		${0:TARGET}
 	}
 
-snippet foreach-list
+snippet foreach
 options head
 	foreach ($${1:#:variable} as $${2:#:x}) {
 		${0:TARGET}
@@ -494,6 +498,12 @@ snippet table
 snippet th
 options word
     <th>${1:TARGET}</th>${2}
+snippet td
+options word
+    <td>${1:TARGET}</td>${2}
+snippet tr
+options word
+    <tr>${1:TARGET}</tr>${2}
 
 snippet ulsquare
 options word
@@ -552,6 +562,8 @@ options word
 snippet inputcheckbox
 options word
     <input type="checkbox" name="${1}">${2}
+snippet hidden
+    <input type="hidden" name="${1}" value="${2}">${3}
 snippet submit
     <input type="submit" value="${1}">${2}
 

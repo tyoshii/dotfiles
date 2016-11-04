@@ -1,3 +1,48 @@
+snippet express
+    var express = require('express');
+    var app = express();
+
+    app.get('/', function(req, res) {
+      res.send('Hello world');
+    });
+
+    var server = app.listen(3000);
+
+    console.log('Server running at http://localhost:3000/');
+
+snippet socket
+    var http = require('http');
+    var socketio = require('socket.io');
+
+    var server = http.createServer(function(req,res){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.end('Hello World!!');
+    }).listen(3000);
+
+    var io = socketio.listen(server);
+
+    io.sockets.on("connection", function(socket) {
+      socket.on("c2s_message", function(data) {
+        console.log(data);
+      }
+    });
+
+    console.log('Server running at http://localhost:3000/');
+
+snippet node
+    var http = require('http');
+
+    var server = http.createServer(function(req,res){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.end('Hello World!!');
+    }).listen(3000);
+
+    console.log('Server running at http://localhost:3000/');
+
+snippet fs
+    var fs = require('fs');
+    var html = fs.readFileSync('./index.html', 'utf8');
+
 snippet :f
 options head
   ${1:#:method_name}: function(${2:#:attribute}) {
