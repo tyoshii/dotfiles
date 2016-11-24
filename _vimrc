@@ -51,8 +51,6 @@ set ambiwidth=double
 set tabstop=4
 set expandtab
 autocmd FileType cpp set tabstop=2
-autocmd FileType php set tabstop=2
-autocmd FileType php set noexpandtab
 autocmd FileType ruby set tabstop=2
 autocmd FileType html set tabstop=2
 autocmd FileType htmljinja set tabstop=2
