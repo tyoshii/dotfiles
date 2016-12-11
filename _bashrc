@@ -25,16 +25,18 @@ export GOROOT=/usr/local/go
 export PATH=$PATH:$GOROOT/bin
 
 # brew php55
-export PATH="$(brew --prefix homebrew/php/php55)/bin:$PATH"
+if which brew > /dev/null 2>&1 ; then
+    export PATH="$(brew --prefix homebrew/php/php55)/bin:$PATH";
+fi
 
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
 
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+if which rbenv > /dev/null 2>&1 ; then eval "$(rbenv init -)"; fi
 
 
 ### composer
-if which composer > /dev/null; then PATH="$PATH:$HOME/.composer/vendor/bin"; fi
+if which composer > /dev/null 2>&1 ; then PATH="$PATH:$HOME/.composer/vendor/bin"; fi
 
 
 # brew cask
@@ -45,10 +47,6 @@ alias ta="tmux attach"
 
 # vagrant
 alias va="vagrant"
-
-# nvm
-export NVM_DIR="$HOME/.nvm"
-. "$(brew --prefix nvm)/nvm.sh"
 
 
 if [ -e "${HOME}/.bashrc_local" ]; then
