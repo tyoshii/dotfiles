@@ -37,6 +37,9 @@ ln -s $PWD/_vim/filetype.vim ~/.vim/filetype.vim
 ln -s $PWD/_vim/syntax ~/.vim/syntax
 ln -s $PWD/_vim/snippets ~/.vim/snippets
 
+mkdir -p ~/.ssh/
+cp $PWD/_ssh/config ~/.ssh/config
+
 # neobndle install
 sh ~/.vim/bundle/neobundle.vim/bin/neoinstall
 
