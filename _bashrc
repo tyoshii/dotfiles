@@ -10,6 +10,7 @@ export LESS='-X -i -P ?f%f:(stdin).  ?lb%lb?L/%L..  [?eEOF:?pb%pb¥%..]'
 export JLESSCHARSET=japanese-ujis
 
 export EDITOR=/usr/bin/vim
+export MYSQL_PS1="\u@\h [\d]> "
 
 alias ls="ls -CF"
 alias grep="grep --color=auto"

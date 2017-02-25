@@ -37,5 +37,8 @@ ln -s $PWD/_vim/filetype.vim ~/.vim/filetype.vim
 ln -s $PWD/_vim/syntax ~/.vim/syntax
 ln -s $PWD/_vim/snippets ~/.vim/snippets
 
+# neobndle install
+sh ~/.vim/bundle/neobundle.vim/bin/neoinstall
+
 # about golang
 sh golang.sh
