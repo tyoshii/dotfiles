@@ -1,2 +1,4 @@
 StrictHostKeyChecking no
 ForwardAgent yes
+ServerAliveInterval 300
+TCPKeepAlive yes
