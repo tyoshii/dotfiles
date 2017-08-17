@@ -25,6 +25,11 @@ fi
 export GOROOT=/usr/local/go
 export PATH=$PATH:$GOROOT/bin
 
+# nvm
+if [[ -s ~/.nvm/nvm.sh ]]; then
+    source ~/.nvm/nvm.sh
+fi
+
 # brew php55
 if which brew > /dev/null 2>&1 ; then
     export PATH="$(brew --prefix homebrew/php/php55)/bin:$PATH";
