@@ -20,6 +20,13 @@ if [ -f ${PERLBREW_BASHRC} ]; then
     source ${PERLBREW_BASHRC}
 fi
 
+# azure cli
+AZ_COMP="/Users/tyoshii/lib/azure-cli/az.completion"
+if [ -f ${AZ_COMP} ]; then
+    export PATH=$PATH:/Users/tyoshii/bin
+    source $AZ_COMP
+fi
+
 #golang
 export GOROOT=/usr/local/go
 export PATH=$PATH:$GOROOT/bin
