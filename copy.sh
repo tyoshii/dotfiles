@@ -40,8 +40,9 @@ ln -s $PWD/_vim/snippets ~/.vim/snippets
 mkdir -p ~/.ssh/
 cp $PWD/_ssh/config ~/.ssh/config
 
-# neobndle install
-sh ~/.vim/bundle/neobundle.vim/bin/neoinstall
+# vim plugin
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 # about golang
 sh golang.sh
