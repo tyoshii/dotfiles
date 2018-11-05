@@ -19,28 +19,6 @@ set nocompatible
 set backspace=indent,eol,start
 set noswapfile
 
-"colorscheme pablo
-hi Constant cterm=bold
-hi Special cterm=bold
-hi Comment cterm=bold ctermfg=green
-hi Identifier cterm=bold
-hi Statement cterm=bold
-hi PreProc cterm=bold
-hi Type cterm=bold
-hi Error cterm=bold
-hi Question cterm=bold
-hi VertSplit cterm=bold
-hi LineNr cterm=bold
-hi ModeMsg cterm=bold ctermfg=yellow
-hi Directory cterm=bold ctermfg=DarkRed
-
-hi StorageClass cterm=bold ctermfg=yellow
-hi Structure cterm=bold ctermfg=yellow
-"hi Delimiter cterm=none ctermfg=none
-highlight Pmenu ctermbg=4
-highlight PmenuSel ctermbg=1
-highlight PMenuSbar ctermbg=4
-
 set termencoding=utf-8
 set encoding=utf-8
 set fileencodings=utf-8,cp932,iso-2022-jp,euc-jp
@@ -48,14 +26,15 @@ set ambiwidth=double
 
 " tab
 set tabstop=4
+set shiftwidth=4
 set expandtab
-autocmd FileType cpp set tabstop=2
-autocmd FileType ruby set tabstop=2
-autocmd FileType html set tabstop=2
-autocmd FileType htmljinja set tabstop=2
-autocmd FileType css set tabstop=2
-autocmd FileType ant set tabstop=2
-autocmd FileType javascript set tabstop=2
+autocmd FileType cpp set tabstop=2 shiftwidth=2
+autocmd FileType ruby set tabstop=2 shiftwidth=2
+autocmd FileType html set tabstop=2 shiftwidth=2
+autocmd FileType htmljinja set tabstop=2 shiftwidth=2
+autocmd FileType css set tabstop=2 shiftwidth=2
+autocmd FileType ant set tabstop=2 shiftwidth=2
+autocmd FileType javascript set tabstop=2 shiftwidth=2
 
 " 表示関連
 set showmatch
@@ -108,7 +87,7 @@ autocmd BufNewFile,BufRead *._ejs set filetype=ejs
 
 autocmd BufNewFile,BufRead *.vue set filetype=vue
 autocmd FileType vue syntax sync fromstart
-autocmd FileType vue set tabstop=2
+autocmd FileType vue set tabstop=2 shiftwidth=2
 
 function! s:DetectEjs()
     if getline(1) =~ '^#!.*\<ejs\>'
@@ -157,9 +136,25 @@ Plug 'posva/vim-vue'
 " comment out
 Plug 'tomtom/tcomment_vim'
 
+" syntax
+Plug 'w0rp/ale'
+let g:ale_lint_on_text_changed = 0
+
+" closetag
+Plug 'alvan/vim-closetag'
+let g:closetag_filenames = '*.html,*.vue'
+
+" vim-over
+Plug 'osyo-manga/vim-over'
+" 全体置換
+nnoremap <silent> <space>o :OverCommandLine<CR>%s//g<Left><Left>
+" 選択範囲置換
+vnoremap <silent> <space>o :OverCommandLine<CR>s//g<Left><Left>
+" カーソルしたの単語置換
+nnoremap sub :OverCommandLine<CR>%s/<C-r><C-w>//g<Left><Left>
+
 call plug#end()
 """"""""""""""""""""""""""""""
 
 syntax enable
 colorscheme molokai " カラースキームにmolokaiを設定する
-set t_Co=256
