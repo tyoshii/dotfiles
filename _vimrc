@@ -35,6 +35,7 @@ autocmd FileType htmljinja set tabstop=2 shiftwidth=2
 autocmd FileType css set tabstop=2 shiftwidth=2
 autocmd FileType ant set tabstop=2 shiftwidth=2
 autocmd FileType javascript set tabstop=2 shiftwidth=2
+autocmd FileType yaml set tabstop=2 shiftwidth=2
 
 " 表示関連
 set showmatch
