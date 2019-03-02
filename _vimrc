@@ -33,9 +33,11 @@ autocmd FileType ruby set tabstop=2 shiftwidth=2
 autocmd FileType html set tabstop=2 shiftwidth=2
 autocmd FileType htmljinja set tabstop=2 shiftwidth=2
 autocmd FileType css set tabstop=2 shiftwidth=2
+autocmd FileType scss set tabstop=2 shiftwidth=2
 autocmd FileType ant set tabstop=2 shiftwidth=2
 autocmd FileType javascript set tabstop=2 shiftwidth=2
 autocmd FileType yaml set tabstop=2 shiftwidth=2
+autocmd FileType xml set tabstop=2 shiftwidth=2
 
 " 表示関連
 set showmatch
@@ -98,12 +100,17 @@ endfunction
 
 autocmd BufNewFile,BufRead * call s:DetectEjs()
 
+"esc
+inoremap <silent> jj <ESC>
+
 " 行末の空白をハイライト
 augroup HighlightTrailingSpaces
   autocmd!
   autocmd VimEnter,WinEnter,ColorScheme * highlight TrailingSpaces term=underline guibg=Red ctermbg=Red
   autocmd VimEnter,WinEnter * match TrailingSpaces /\s\+$/
 augroup END
+
+autocmd BufWritePre * :%s/\s\+$//ge
 
 """"""""""""""""""""""""""""""
 " 最後のカーソル位置を復元する
@@ -143,7 +150,7 @@ let g:ale_lint_on_text_changed = 0
 
 " closetag
 Plug 'alvan/vim-closetag'
-let g:closetag_filenames = '*.html,*.vue'
+let g:closetag_filenames = '*.html,*.vue,*.blade.php'
 
 " vim-over
 Plug 'osyo-manga/vim-over'
@@ -153,6 +160,8 @@ nnoremap <silent> <space>o :OverCommandLine<CR>%s//g<Left><Left>
 vnoremap <silent> <space>o :OverCommandLine<CR>s//g<Left><Left>
 " カーソルしたの単語置換
 nnoremap sub :OverCommandLine<CR>%s/<C-r><C-w>//g<Left><Left>
+
+Plug 'keith/swift.vim'
 
 call plug#end()
 """"""""""""""""""""""""""""""

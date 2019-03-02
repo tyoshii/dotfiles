@@ -70,3 +70,4 @@ fi
 # docker
 alias do="docker-compose"
 alias doe="docker-compose exec"
+alias dol="docker-compose logs -f"
