@@ -17,30 +17,7 @@ endfunction
 set modeline
 set nocompatible
 set backspace=indent,eol,start
-
-syntax on
-
-"colorscheme pablo
-hi Constant cterm=bold
-hi Special cterm=bold
-hi Comment cterm=bold ctermfg=green
-hi Identifier cterm=bold
-hi Statement cterm=bold
-hi PreProc cterm=bold
-hi Type cterm=bold
-hi Error cterm=bold
-hi Question cterm=bold
-hi VertSplit cterm=bold
-hi LineNr cterm=bold
-hi ModeMsg cterm=bold ctermfg=yellow
-hi Directory cterm=bold ctermfg=DarkRed
-
-hi StorageClass cterm=bold ctermfg=yellow
-hi Structure cterm=bold ctermfg=yellow
-"hi Delimiter cterm=none ctermfg=none
-highlight Pmenu ctermbg=4
-highlight PmenuSel ctermbg=1
-highlight PMenuSbar ctermbg=4
+set noswapfile
 
 set termencoding=utf-8
 set encoding=utf-8
@@ -49,14 +26,18 @@ set ambiwidth=double
 
 " tab
 set tabstop=4
+set shiftwidth=4
 set expandtab
-autocmd FileType cpp set tabstop=2
-autocmd FileType ruby set tabstop=2
-autocmd FileType html set tabstop=2
-autocmd FileType htmljinja set tabstop=2
-autocmd FileType css set tabstop=2
-autocmd FileType ant set tabstop=2
-autocmd FileType javascript set tabstop=2
+autocmd FileType cpp set tabstop=2 shiftwidth=2
+autocmd FileType ruby set tabstop=2 shiftwidth=2
+autocmd FileType html set tabstop=2 shiftwidth=2
+autocmd FileType htmljinja set tabstop=2 shiftwidth=2
+autocmd FileType css set tabstop=2 shiftwidth=2
+autocmd FileType scss set tabstop=2 shiftwidth=2
+autocmd FileType ant set tabstop=2 shiftwidth=2
+autocmd FileType javascript set tabstop=2 shiftwidth=2
+autocmd FileType yaml set tabstop=2 shiftwidth=2
+autocmd FileType xml set tabstop=2 shiftwidth=2
 
 " 表示関連
 set showmatch
@@ -107,6 +88,10 @@ autocmd FileType git :set fileencoding=utf-8
 autocmd BufNewFile,BufRead *.ejs set filetype=ejs
 autocmd BufNewFile,BufRead *._ejs set filetype=ejs
 
+autocmd BufNewFile,BufRead *.vue set filetype=vue
+autocmd FileType vue syntax sync fromstart
+autocmd FileType vue set tabstop=2 shiftwidth=2
+
 function! s:DetectEjs()
     if getline(1) =~ '^#!.*\<ejs\>'
         set filetype=ejs
@@ -115,6 +100,9 @@ endfunction
 
 autocmd BufNewFile,BufRead * call s:DetectEjs()
 
+"esc
+inoremap <silent> jj <ESC>
+
 " 行末の空白をハイライト
 augroup HighlightTrailingSpaces
   autocmd!
@@ -122,71 +110,61 @@ augroup HighlightTrailingSpaces
   autocmd VimEnter,WinEnter * match TrailingSpaces /\s\+$/
 augroup END
 
-" NeoBundle
- " Note: Skip initialization for vim-tiny or vim-small.
- if 0 | endif
+autocmd BufWritePre * :%s/\s\+$//ge
 
- if has('vim_starting')
-   if &compatible
-     set nocompatible               " Be iMproved
-   endif
+""""""""""""""""""""""""""""""
+" 最後のカーソル位置を復元する
+""""""""""""""""""""""""""""""
+if has("autocmd")
+    autocmd BufReadPost *
+    \ if line("'\"") > 0 && line ("'\"") <= line("$") |
+    \   exe "normal! g'\"" |
+    \ endif
+endif
+""""""""""""""""""""""""""""""
 
-   " Required:
-   set runtimepath+=~/.vim/bundle/neobundle.vim/
- endif
 
- " Required:
- call neobundle#begin(expand('~/.vim/bundle/'))
+""""""""""""""""""""""""""""""
+" プラグインのセットアップ
+""""""""""""""""""""""""""""""
+call plug#begin('~/.vim/plugged')
 
- " Let NeoBundle manage NeoBundle
- " Required:
- NeoBundleFetch 'Shougo/neobundle.vim'
+" インデントに色を付けて見やすくする
+Plug 'nathanaelkane/vim-indent-guides'
+" vimを立ち上げたときに、自動的にvim-indent-guidesをオンにする
+let g:indent_guides_enable_on_vim_startup = 1
 
- " My Bundles here:
- " Refer to |:NeoBundle-examples|.
- " Note: You don't set neobundle setting in .gvimrc!
+" php indent
+Plug '2072/PHP-Indenting-for-VIm'
 
- " snippet
- NeoBundle 'Shougo/neocomplcache'
- NeoBundle 'Shougo/neosnippet'
- NeoBundle 'Shougo/neosnippet-snippets'
+" color scheme
+Plug 'tomasr/molokai'
+Plug 'posva/vim-vue'
 
- "" snippet keybind
- " Plugin key-mappings.
- imap <C-k>     <Plug>(neosnippet_expand_or_jump)
- smap <C-k>     <Plug>(neosnippet_expand_or_jump)
- xmap <C-k>     <Plug>(neosnippet_expand_target)
- 
- " SuperTab like snippets behavior.
- "imap <expr><TAB>
- " \ pumvisible() ? "\<C-n>" :
- " \ neosnippet#expandable_or_jumpable() ?
- " \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
- smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
- \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
- 
- " For conceal markers.
- if has('conceal')
-   set conceallevel=2 concealcursor=niv
-   endif
- 
- "" snippet dir
- let g:neosnippet#snippets_directory='~/.vim/snippets/'
+" comment out
+Plug 'tomtom/tcomment_vim'
 
- " ejs syntax
- NeoBundle 'nikvdp/ejs-syntax'
+" syntax
+Plug 'w0rp/ale'
+let g:ale_lint_on_text_changed = 0
 
- " rubocop
- NeoBundle 'scrooloose/syntastic'
- let g:syntastic_mode_map = { 'mode': 'passive',
-             \ 'active_filetypes': ['ruby'] }
- let g:syntastic_ruby_checkers = ['rubocop']
+" closetag
+Plug 'alvan/vim-closetag'
+let g:closetag_filenames = '*.html,*.vue,*.blade.php'
 
- call neobundle#end()
+" vim-over
+Plug 'osyo-manga/vim-over'
+" 全体置換
+nnoremap <silent> <space>o :OverCommandLine<CR>%s//g<Left><Left>
+" 選択範囲置換
+vnoremap <silent> <space>o :OverCommandLine<CR>s//g<Left><Left>
+" カーソルしたの単語置換
+nnoremap sub :OverCommandLine<CR>%s/<C-r><C-w>//g<Left><Left>
 
- " Required:
- filetype plugin indent on
+Plug 'keith/swift.vim'
 
- " If there are uninstalled bundles found on startup,
- " this will conveniently prompt you to install them.
- NeoBundleCheck
+call plug#end()
+""""""""""""""""""""""""""""""
+
+syntax enable
+colorscheme molokai " カラースキームにmolokaiを設定する

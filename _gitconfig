@@ -30,3 +30,5 @@
 	ui = true
 [include]
     path = ~/.gitconfig.local
+[pager]
+	branch = cat

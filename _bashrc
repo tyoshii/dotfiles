@@ -28,6 +28,9 @@ if [ -f ${AZ_COMP} ]; then
     source $AZ_COMP
 fi
 
+#inetutil
+export PATH=$PATH:/usr/local/opt/inetutils/libexec/gnubin
+
 #golang
 export GOROOT=/usr/local/go
 export PATH=$PATH:$GOROOT/bin
@@ -38,10 +41,8 @@ if [ -f /usr/local/opt/nvm/nvm.sh ]; then
     . "/usr/local/opt/nvm/nvm.sh"
 fi
 
-# brew php55
-if which brew > /dev/null 2>&1 ; then
-    export PATH="$(brew --prefix homebrew/php/php55)/bin:$PATH";
-fi
+# php
+export PATH=/usr/local/opt/php@7.1/bin:$PATH
 
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
@@ -66,3 +67,8 @@ alias va="vagrant"
 if [ -e "${HOME}/.bashrc_local" ]; then
   source "${HOME}/.bashrc_local"
 fi
+
+# docker
+alias do="docker-compose"
+alias doe="docker-compose exec"
+alias dol="docker-compose logs -f"
