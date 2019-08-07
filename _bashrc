@@ -33,8 +33,9 @@ export GOROOT=/usr/local/go
 export PATH=$PATH:$GOROOT/bin
 
 # nvm
-if [[ -s ~/.nvm/nvm.sh ]]; then
-    source ~/.nvm/nvm.sh
+if [ -f /usr/local/opt/nvm/nvm.sh ]; then
+    export NVM_DIR="$HOME/.nvm"
+    . "/usr/local/opt/nvm/nvm.sh"
 fi
 
 # brew php55
