@@ -69,6 +69,6 @@ if [ -e "${HOME}/.bashrc_local" ]; then
 fi
 
 # docker
-alias do="docker-compose"
+alias doc="docker-compose"
 alias doe="docker-compose exec"
 alias dol="docker-compose logs -f --tail=500"
