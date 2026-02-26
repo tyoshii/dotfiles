@@ -73,3 +73,6 @@ eval "$(starship init zsh)"
 
 # ─── Local ─────────────────────────────────────────────
 [ -f "$HOME/.zshrc_local" ] && source "$HOME/.zshrc_local"
+
+# mise (version manager)
+eval "$(mise activate zsh)"

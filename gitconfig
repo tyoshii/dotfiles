@@ -24,6 +24,8 @@
 [user]
 	name = Takanao Yoshii
 	email = tyoshii716@gmail.com
+[pull]
+	rebase = true
 [push]
 	default = current
 [color]
