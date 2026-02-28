@@ -21,6 +21,8 @@
 	editor = /usr/bin/vim
 	excludesfile = ~/.gitignore
 	pager = less -r
+	precomposeunicode = true
+	quotepath = false
 [user]
 	name = Takanao Yoshii
 	email = tyoshii716@gmail.com
