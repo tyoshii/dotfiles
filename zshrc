@@ -1,3 +1,6 @@
+# ─── PATH ──────────────────────────────────────────────
+export PATH="$HOME/.local/bin:$PATH"
+
 # ─── History ────────────────────────────────────────────
 HISTFILE=~/.zsh_history
 HISTSIZE=50000
