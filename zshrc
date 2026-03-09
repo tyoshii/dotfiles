@@ -82,3 +82,4 @@ eval "$(mise activate zsh)"
 
 # vibe (worktree auto-cd)
 eval "$(vibe shell-setup)"
+alias v='vibe'
