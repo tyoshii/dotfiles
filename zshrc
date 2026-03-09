@@ -79,3 +79,6 @@ eval "$(starship init zsh)"
 
 # mise (version manager)
 eval "$(mise activate zsh)"
+
+# vibe (worktree auto-cd)
+eval "$(vibe shell-setup)"
