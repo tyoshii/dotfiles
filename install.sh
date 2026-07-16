@@ -19,6 +19,27 @@ link() {
 
 echo "=== dotfiles install ==="
 
+# ─── Dependencies ─────────────────────────────────────
+echo "--- dependencies ---"
+
+if ! command -v brew &>/dev/null; then
+  echo "  installing: Homebrew"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv)"
+else
+  echo "  found: brew"
+fi
+
+deps=(starship mise)
+for dep in "${deps[@]}"; do
+  if ! command -v "$dep" &>/dev/null; then
+    echo "  installing: $dep"
+    brew install "$dep"
+  else
+    echo "  found: $dep"
+  fi
+done
+
 # ─── Symlinks ──────────────────────────────────────────
 link "$DOTFILES/zshrc"               "$HOME/.zshrc"
 link "$DOTFILES/zprofile"            "$HOME/.zprofile"
