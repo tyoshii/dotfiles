@@ -1,0 +1,262 @@
+{
+  "$schema": "https://raw.githubusercontent.com/manaflow-ai/cmux/main/web/data/cmux.schema.json",
+  "schemaVersion": 1,
+
+  // 端末を常にダーク配色にする (背景が暗いので文字色も明るく固定して可読性を確保)
+  "app": {
+    "appearance": "dark",
+    // 通知が来てもサイドバーのタブ順を自動で並び替えない (順序を固定する)
+    "reorderOnNotification": false
+  },
+
+  // ワークスペースコマンド: コマンドパレット (cmd+shift+p) から "ccremote" を選ぶと
+  // 左に ~/z、右側を上下分割 (上: security-ledger / 下: aegis) で 3 つのターミナルが開き、
+  // それぞれ自動で claude (+/remote-control) が起動する。
+  "commands": [
+    {
+      "name": "ccremote",
+      "description": "左: ~/z で claude (+/remote-control) / 右上: security-ledger / 右下: aegis",
+      "keywords": ["ccremote", "cc remote", "claude", "remote", "ledger", "aegis", "3画面", "split"],
+      "workspace": {
+        "name": "CC remote",
+        "cwd": "~",
+        "layout": {
+          "direction": "horizontal",
+          "split": 0.5,
+          "children": [
+            {
+              "pane": {
+                "surfaces": [
+                  {
+                    "type": "terminal",
+                    "name": "claude (~/z)",
+                    "cwd": "~/z",
+                    // 起動と同時に /remote-control を初期プロンプトとして実行
+                    "command": "claude --dangerously-skip-permissions \"/remote-control\"",
+                    "focus": true
+                  }
+                ]
+              }
+            },
+            {
+              // 右側カラムを上下に分割して 2 つのターミナルを配置する
+              "direction": "vertical",
+              "split": 0.5,
+              "children": [
+                {
+                  "pane": {
+                    "surfaces": [
+                      {
+                        "type": "terminal",
+                        "name": "security-ledger",
+                        "cwd": "~/github/CureApp/security-ledger",
+                        // 起動と同時に /remote-control を初期プロンプトとして実行
+                        "command": "claude --dangerously-skip-permissions \"/remote-control\""
+                      }
+                    ]
+                  }
+                },
+                {
+                  "pane": {
+                    "surfaces": [
+                      {
+                        "type": "terminal",
+                        "name": "aegis",
+                        "cwd": "~/github/CureApp/aegis",
+                        // 起動と同時に /remote-control を初期プロンプトとして実行
+                        "command": "claude --dangerously-skip-permissions \"/remote-control\""
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+
+  // This file uses JSON with comments (JSONC).
+  // Uncomment and edit any setting to make it file-managed.
+  // Remove a setting to fall back to the value saved in Settings.
+  // cmux creates this template on launch when ~/.config/cmux/cmux.json is missing.
+  // Legacy settings.json files are read only as fallback for keys not present here.
+
+  //   "app" : {
+  //     "commandPaletteSearchesAllSurfaces" : false,
+  //     "newWorkspacePlacement" : "afterCurrent",
+  //     "openSupportedFilesInCmux" : true,
+  //     "hideTabCloseButton" : false,
+  //     "renameSelectsExistingName" : true,
+  //     "preferredEditor" : "",
+  //     "keepWorkspaceOpenWhenClosingLastSurface" : false,
+  //     "appIcon" : "automatic",
+  //     "menuBarOnly" : false,
+  //     "focusPaneOnFirstClick" : false,
+  //     "openMarkdownInCmuxViewer" : false,
+  //     "warnBeforeClosingTab" : true,
+  //     "appearance" : "system",
+  //     "iMessageMode" : false,
+  //     "confirmQuit" : "always",
+  //     "reorderOnNotification" : true,
+  //     "sendAnonymousTelemetry" : true,
+  //     "warnBeforeClosingTabXButton" : false,
+  //     "minimalMode" : false,
+  //     "language" : "system",
+  //     "workspaceInheritWorkingDirectory" : true
+  //   },
+
+  //   "terminal" : {
+  //     "copyOnSelect" : false,
+  //     "showScrollBar" : true,
+  //     "autoResumeAgentSessions" : true,
+  //     "textBoxMaxLines" : 10,
+  //     "resumeCommands" : [
+  // 
+  //     ]
+  //   },
+
+  //   "notifications" : {
+  //     "command" : "",
+  //     "unreadPaneRing" : true,
+  //     "paneFlash" : true,
+  //     "sound" : "default",
+  //     "dockBadge" : true,
+  //     "hooksMode" : "append",
+  //     "showInMenuBar" : true,
+  //     "customSoundFilePath" : "",
+  //     "hooks" : [
+  // 
+  //     ]
+  //   },
+
+  "sidebar" : {
+    "openPortLinksInCmuxBrowser" : false,
+    "openPullRequestLinksInCmuxBrowser" : false
+  },
+
+  //   "workspaceColors" : {
+  //     "selectionColor" : null,
+  //     "indicatorStyle" : "leftRail",
+  //     "notificationBadgeColor" : null,
+  //     "colors" : {
+  //       "Crimson" : "#922B21",
+  //       "Orange" : "#A04000",
+  //       "Teal" : "#006B6B",
+  //       "Indigo" : "#283593",
+  //       "Magenta" : "#AD1457",
+  //       "Aqua" : "#0E6B8C",
+  //       "Brown" : "#7B3F00",
+  //       "Charcoal" : "#3E4B5E",
+  //       "Red" : "#C0392B",
+  //       "Amber" : "#7D6608",
+  //       "Navy" : "#1A5276",
+  //       "Rose" : "#880E4F",
+  //       "Blue" : "#1565C0",
+  //       "Purple" : "#6A1B9A",
+  //       "Green" : "#196F3D",
+  //       "Olive" : "#4A5C18"
+  //     }
+  //   },
+
+  //   "sidebarAppearance" : {
+  //     "lightModeTintColor" : null,
+  //     "darkModeTintColor" : null,
+  //     "matchTerminalBackground" : false,
+  //     "tintOpacity" : 0.17999999999999999,
+  //     "tintColor" : "#000000"
+  //   },
+
+  //   "automation" : {
+  //     "suppressSubagentNotifications" : true,
+  //     "cursorIntegration" : true,
+  //     "claudeCodeIntegration" : true,
+  //     "socketControlMode" : "cmuxOnly",
+  //     "claudeBinaryPath" : "",
+  //     "geminiIntegration" : true,
+  //     "portBase" : 9100,
+  //     "ripgrepBinaryPath" : "",
+  //     "socketPassword" : "",
+  //     "portRange" : 10
+  //   },
+
+  "browser" : {
+    "interceptTerminalOpenCommandInCmuxBrowser" : false,
+    "openTerminalLinksInCmuxBrowser" : false
+  },
+
+  //   "shortcuts" : {
+  //     "bindings" : {
+  //       "splitBrowserRight" : "cmd+opt+d",
+  //       "closeWorkspace" : "cmd+shift+w",
+  //       "triggerFlash" : "cmd+shift+h",
+  //       "splitDown" : "cmd+shift+d",
+  //       "browserZoomReset" : "cmd+0",
+  //       "hideFind" : "cmd+shift+opt+f",
+  //       "focusBrowserAddressBar" : "cmd+l",
+  //       "prevSurface" : "cmd+shift+[",
+  //       "showBrowserJavaScriptConsole" : "cmd+opt+c",
+  //       "browserZoomIn" : "cmd+=",
+  //       "newTab" : "cmd+n",
+  //       "splitRight" : "cmd+d",
+  //       "browserForward" : "cmd+]",
+  //       "toggleReactGrab" : "cmd+shift+g",
+  //       "prevSidebarTab" : "cmd+ctrl+[",
+  //       "sendFeedback" : "",
+  //       "closeWindow" : "cmd+ctrl+w",
+  //       "reloadConfiguration" : "cmd+shift+,",
+  //       "focusUp" : "cmd+opt+↑",
+  //       "browserBack" : "cmd+[",
+  //       "focusTextBoxInput" : "cmd+shift+a",
+  //       "browserZoomOut" : "cmd+-",
+  //       "attachTextBoxFile" : "cmd+shift+opt+a",
+  //       "equalizeSplits" : "cmd+ctrl+=",
+  //       "closeOtherTabsInPane" : "cmd+opt+t",
+  //       "findInDirectory" : "cmd+shift+f",
+  //       "findPrevious" : "cmd+opt+g",
+  //       "toggleSplitZoom" : "cmd+shift+\r",
+  //       "reopenClosedBrowserPanel" : "cmd+shift+t",
+  //       "commandPalettePrevious" : "ctrl+p",
+  //       "goToWorkspace" : "cmd+p",
+  //       "focusRight" : "cmd+opt+→",
+  //       "find" : "cmd+f",
+  //       "toggleSidebar" : "cmd+b",
+  //       "nextSurface" : "cmd+shift+]",
+  //       "quit" : "cmd+q",
+  //       "editWorkspaceDescription" : "cmd+opt+e",
+  //       "closeTab" : "cmd+w",
+  //       "useSelectionForFind" : "cmd+e",
+  //       "openBrowser" : "cmd+shift+l",
+  //       "focusDown" : "cmd+opt+↓",
+  //       "showHideAllWindows" : "cmd+opt+ctrl+.",
+  //       "focusRightSidebar" : "cmd+shift+e",
+  //       "toggleFileExplorer" : "cmd+opt+b",
+  //       "selectSurfaceByNumber" : "ctrl+1",
+  //       "showNotifications" : "cmd+i",
+  //       "renameTab" : "cmd+r",
+  //       "toggleBrowserDeveloperTools" : "cmd+opt+i",
+  //       "renameWorkspace" : "cmd+shift+r",
+  //       "openFolder" : "cmd+o",
+  //       "newSurface" : "cmd+t",
+  //       "jumpToUnread" : "cmd+shift+u",
+  //       "splitBrowserDown" : "cmd+shift+opt+d",
+  //       "saveFilePreview" : "cmd+s",
+  //       "toggleFullScreen" : "cmd+ctrl+f",
+  //       "nextSidebarTab" : "cmd+ctrl+]",
+  //       "focusLeft" : "cmd+opt+←",
+  //       "commandPalette" : "cmd+shift+p",
+  //       "globalSearch" : "cmd+opt+f",
+  //       "findNext" : "cmd+g",
+  //       "newWindow" : "cmd+shift+n",
+  //       "browserReload" : "cmd+r",
+  //       "toggleUnread" : "cmd+opt+u",
+  //       "toggleTerminalCopyMode" : "cmd+shift+m",
+  //       "selectWorkspaceByNumber" : "cmd+1",
+  //       "openSettings" : "cmd+,",
+  //       "reopenPreviousSession" : "cmd+shift+o",
+  //       "markOldestUnreadAndJumpNext" : "cmd+ctrl+u",
+  //       "commandPaletteNext" : "ctrl+n"
+  //     }
+  //   },
+}

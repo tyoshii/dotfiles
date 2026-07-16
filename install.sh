@@ -25,6 +25,8 @@ link "$DOTFILES/zprofile"            "$HOME/.zprofile"
 link "$DOTFILES/gitconfig"           "$HOME/.gitconfig"
 link "$DOTFILES/gitignore"           "$HOME/.gitignore"
 link "$DOTFILES/config/starship.toml" "$HOME/.config/starship.toml"
+link "$DOTFILES/config/cmux/cmux.json" "$HOME/.config/cmux/cmux.json"
+link "$DOTFILES/config/ghostty/config" "$HOME/.config/ghostty/config"
 
 # ─── SSH (copy, not symlink) ──────────────────────────
 mkdir -p "$HOME/.ssh"

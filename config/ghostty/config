@@ -1,0 +1,40 @@
+# Ghostty configuration (~/.config/ghostty/config)
+#
+# 既存の設定 (~/Library/Application Support/com.mitchellh.ghostty/config) を
+# 元に作成。色まわりは Ghostty のデフォルト値を明示的に記載している
+# (cmux のテーマピッカー等で上書きされても見た目を固定できるようにするため)。
+#
+# 全オプションと既定値の一覧: ghostty +show-config --default --docs
+# ドキュメント: https://ghostty.org/docs/config
+# リロード: Command + Shift + comma (macOS)
+
+# --- 基本の色 (Ghostty デフォルト) ---
+background = #282c34
+foreground = #ffffff
+
+# --- ANSI 16 色 (Ghostty デフォルト = Tomorrow Night 系) ---
+# 通常色 (0-7)
+palette = 0=#1d1f21
+palette = 1=#cc6666
+palette = 2=#b5bd68
+palette = 3=#f0c674
+palette = 4=#81a2be
+palette = 5=#b294bb
+palette = 6=#8abeb7
+palette = 7=#c5c8c6
+# 明色 (8-15)
+palette = 8=#666666
+palette = 9=#d54e53
+palette = 10=#b9ca4a
+palette = 11=#e7c547
+palette = 12=#7aa6da
+palette = 13=#c397d8
+palette = 14=#70c0b1
+palette = 15=#eaeaea
+
+# palette 16-255 は標準の xterm 256 色キューブ (全ターミナル共通の固定値) の
+# ため省略。必要なら `ghostty +show-config --default` で確認・追記可能。
+
+# --- スプリット境界線の色を見やすくする (元の設定を踏襲) ---
+unfocused-split-fill = #444444
+split-divider-color = #ff00ff
