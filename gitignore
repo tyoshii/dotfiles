@@ -3,3 +3,5 @@
 *.out
 *.tgz
 rhel*/
+
+**/.claude/settings.local.json

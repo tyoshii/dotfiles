@@ -83,3 +83,18 @@ eval "$(mise activate zsh)"
 # vibe (worktree auto-cd)
 eval "$(vibe shell-setup)"
 alias v='vibe'
+
+# pnpm
+export PNPM_HOME="/Users/takanao.yoshii/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# bun completions
+[ -s "/Users/takanao.yoshii/.bun/_bun" ] && source "/Users/takanao.yoshii/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
