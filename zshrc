@@ -72,17 +72,23 @@ setopt TRANSIENT_RPROMPT
 RPROMPT='%F{240}%*%f'
 
 # ─── Starship Prompt ───────────────────────────────────
-eval "$(starship init zsh)"
+if command -v starship &>/dev/null; then
+  eval "$(starship init zsh)"
+fi
 
 # ─── Local ─────────────────────────────────────────────
 [ -f "$HOME/.zshrc_local" ] && source "$HOME/.zshrc_local"
 
 # mise (version manager)
-eval "$(mise activate zsh)"
+if command -v mise &>/dev/null; then
+  eval "$(mise activate zsh)"
+fi
 
 # vibe (worktree auto-cd)
-eval "$(vibe shell-setup)"
-alias v='vibe'
+if command -v vibe &>/dev/null; then
+  eval "$(vibe shell-setup)"
+  alias v='vibe'
+fi
 
 # pnpm
 export PNPM_HOME="/Users/takanao.yoshii/Library/pnpm"
