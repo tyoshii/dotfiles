@@ -49,6 +49,16 @@ link "$DOTFILES/config/starship.toml" "$HOME/.config/starship.toml"
 link "$DOTFILES/config/cmux/cmux.json" "$HOME/.config/cmux/cmux.json"
 link "$DOTFILES/config/ghostty/config" "$HOME/.config/ghostty/config"
 
+# ─── Claude Code ──────────────────────────────────────
+mkdir -p "$HOME/.claude"
+link "$DOTFILES/config/claude/statusline.sh" "$HOME/.claude/statusline.sh"
+if [ -f "$HOME/.claude/settings.json" ]; then
+  cp "$HOME/.claude/settings.json" "$HOME/.claude/settings.json.bak"
+  echo "  backup: ~/.claude/settings.json → ~/.claude/settings.json.bak"
+fi
+sed "s|__HOME__|$HOME|g" "$DOTFILES/config/claude/settings.json.tpl" > "$HOME/.claude/settings.json"
+echo "  generated: ~/.claude/settings.json"
+
 # ─── SSH (copy, not symlink) ──────────────────────────
 mkdir -p "$HOME/.ssh"
 cp "$DOTFILES/ssh/config" "$HOME/.ssh/config"
