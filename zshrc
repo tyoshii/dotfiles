@@ -104,3 +104,7 @@ esac
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# ─── cmux ──────────────────────────────────────────────
+# cmux が Codex CLI に自動でフックを入れる機能と、起動時の警告を止める
+export CMUX_CODEX_HOOKS_DISABLED=1
