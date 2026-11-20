@@ -116,6 +116,31 @@
           }
         ]
       }
+    ],
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command vibe start \"$(echo $CLAUDE_WORKTREE_NAME)\" --claude-code-worktree-hook"
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command vibe clean --force --claude-code-worktree-hook"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Edit(~/.claude/projects/*/dev-server.yml)"
     ]
   },
   "statusLine": {
@@ -134,7 +159,8 @@
     "pinned-actions-manager@cureapp": true,
     "genshijin@genshijin": false,
     "slack@cureapp": true,
-    "kawaraban@cureapp": true
+    "kawaraban@cureapp": true,
+    "breach-audit@breach-audit": true
   },
   "extraKnownMarketplaces": {
     "cureapp": {
@@ -147,6 +173,12 @@
       "source": {
         "source": "github",
         "repo": "InterfaceX-co-jp/genshijin"
+      }
+    },
+    "breach-audit": {
+      "source": {
+        "source": "directory",
+        "path": "__HOME__/github/tyoshii/breach-audit"
       }
     }
   },
