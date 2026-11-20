@@ -48,6 +48,9 @@ link "$DOTFILES/gitignore"           "$HOME/.gitignore"
 link "$DOTFILES/config/starship.toml" "$HOME/.config/starship.toml"
 link "$DOTFILES/config/cmux/cmux.json" "$HOME/.config/cmux/cmux.json"
 link "$DOTFILES/config/ghostty/config" "$HOME/.config/ghostty/config"
+# Ghostty.app 専用 / cmux 専用の上書き設定（それぞれ相手には読まれない場所に置く）
+link "$DOTFILES/config/ghostty/ghostty-only.ghostty" "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
+link "$DOTFILES/config/cmux/cmux-only.ghostty" "$HOME/Library/Application Support/com.cmuxterm.app/config.ghostty"
 link "$DOTFILES/config/cmux/sidebars/status-colors.js" "$HOME/.config/cmux/sidebars/status-colors.js"
 
 # ─── Claude Code ──────────────────────────────────────

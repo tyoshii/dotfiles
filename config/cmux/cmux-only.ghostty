@@ -1,0 +1,18 @@
+# cmux 専用の上書き設定
+#
+# ~/Library/Application Support/com.cmuxterm.app/config.ghostty から
+# シンボリックリンクで読み込まれる (cmux のテーマ上書きファイル。確認: `cmux themes list`)。
+# Ghostty.app はこのファイルを読まない。
+#
+# 注意: cmux は内蔵の libghostty 経由で
+# ~/Library/Application Support/com.mitchellh.ghostty/config.ghostty (ghostty-only.ghostty) も
+# 読んでしまうため、そこで変えた色をここで元に戻している。
+# `cmux themes set` を使うとこのファイルが書き換わる (リンクが切れる) ので注意。
+
+background = #282c34
+foreground = #ffffff
+# 空にすると既定値に戻る
+cursor-color =
+cursor-text =
+selection-background =
+selection-foreground =

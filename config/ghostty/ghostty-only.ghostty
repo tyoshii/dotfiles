@@ -1,0 +1,27 @@
+# Ghostty.app 専用の上書き設定
+#
+# ~/Library/Application Support/com.mitchellh.ghostty/config.ghostty から
+# シンボリックリンクで読み込まれる。Ghostty.app は ~/.config/ghostty/config の
+# あとにこのファイルを読むので、ここに書いた値が優先される。
+# cmux は ~/.config/ghostty/config しか読まないため、cmux には影響しない。
+# (確認: `cmux config paths`)
+#
+# 目的: cmux (背景 #282c34 の青みグレー) と見分けられるよう、くすんだ暖色系 (モーヴ寄り) にする。
+
+background = #2f2629
+foreground = #ebe3e6
+cursor-color = #d99aae
+cursor-text = #2f2629
+selection-background = #4d3b42
+selection-foreground = #f5eef0
+
+# タイトルバーも背景色に合わせて塗り、ウィンドウ単位で違いが分かるようにする
+macos-titlebar-style = transparent
+window-theme = dark
+
+# Cmd+V で画像も貼れるようにする (Claude Code 用)
+# Ghostty は画像の貼り付けを扱えないため、まず Ctrl+V (Claude Code の画像貼り付け) を送り、
+# 続けて通常の文字貼り付けを行う。クリップボードが画像なら前者、文字なら後者が効く。
+# 注意: zsh や vim では Ctrl+V が「次の 1 文字をそのまま入力」になるため、文字の貼り付けが崩れる場合がある。
+keybind = cmd+v=text:\x16
+keybind = chain=paste_from_clipboard
