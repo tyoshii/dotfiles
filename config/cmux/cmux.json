@@ -6,7 +6,9 @@
   "app": {
     "appearance": "dark",
     // 通知が来てもサイドバーのタブ順を自動で並び替えない (順序を固定する)
-    "reorderOnNotification": false
+    "reorderOnNotification": false,
+    // cmd+n で作るワークスペースはサイドバーの一番下に追加する
+    "newWorkspacePlacement": "end"
   },
 
   // ワークスペースコマンド: コマンドパレット (cmd+shift+p) から "ccremote" を選ぶと
