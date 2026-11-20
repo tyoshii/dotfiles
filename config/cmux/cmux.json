@@ -133,7 +133,14 @@
 
   "sidebar" : {
     "openPortLinksInCmuxBrowser" : false,
-    "openPullRequestLinksInCmuxBrowser" : false
+    "openPullRequestLinksInCmuxBrowser" : false,
+    // ステータスを色付きアイコン1つで表示（Running / Needs input の文字行を置き換える）
+    "compactAgentStatus" : true,
+    "compactStatusIcons" : {
+      "running" : "bolt.fill",
+      "needsInput" : "hand.raised.fill",
+      "idle" : "moon.zzz.fill"
+    }
   },
 
   //   "workspaceColors" : {

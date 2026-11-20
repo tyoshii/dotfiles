@@ -30,7 +30,7 @@ else
   echo "  found: brew"
 fi
 
-deps=(starship mise)
+deps=(starship mise jq)
 for dep in "${deps[@]}"; do
   if ! command -v "$dep" &>/dev/null; then
     echo "  installing: $dep"
@@ -48,16 +48,26 @@ link "$DOTFILES/gitignore"           "$HOME/.gitignore"
 link "$DOTFILES/config/starship.toml" "$HOME/.config/starship.toml"
 link "$DOTFILES/config/cmux/cmux.json" "$HOME/.config/cmux/cmux.json"
 link "$DOTFILES/config/ghostty/config" "$HOME/.config/ghostty/config"
+link "$DOTFILES/config/cmux/sidebars/status-colors.js" "$HOME/.config/cmux/sidebars/status-colors.js"
 
 # ─── Claude Code ──────────────────────────────────────
 mkdir -p "$HOME/.claude"
 link "$DOTFILES/config/claude/statusline.sh" "$HOME/.claude/statusline.sh"
+link "$DOTFILES/config/claude/hooks/cmux-subagents.sh" "$HOME/.claude/hooks/cmux-subagents.sh"
 if [ -f "$HOME/.claude/settings.json" ]; then
   cp "$HOME/.claude/settings.json" "$HOME/.claude/settings.json.bak"
   echo "  backup: ~/.claude/settings.json → ~/.claude/settings.json.bak"
 fi
 sed "s|__HOME__|$HOME|g" "$DOTFILES/config/claude/settings.json.tpl" > "$HOME/.claude/settings.json"
 echo "  generated: ~/.claude/settings.json"
+
+# ─── cmux ─────────────────────────────────────────────
+# 自作サイドバーの選択は cmux.json に持てないため、cmux が起動していれば CLI で選ぶ
+if command -v cmux &>/dev/null && cmux sidebar select status-colors &>/dev/null; then
+  echo "  selected: cmux sidebar status-colors"
+else
+  echo "  skip: cmux sidebar select (cmux 起動後に: cmux sidebar select status-colors)"
+fi
 
 # ─── SSH (copy, not symlink) ──────────────────────────
 mkdir -p "$HOME/.ssh"

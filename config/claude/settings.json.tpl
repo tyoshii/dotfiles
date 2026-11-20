@@ -3,7 +3,7 @@
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
-  "model": "claude-opus-4-6",
+  "model": "opus",
   "hooks": {
     "PreToolUse": [],
     "Notification": [
@@ -35,6 +35,77 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '返答・途中経過の報告はすべて日本語で書くこと。'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash __HOME__/.claude/skills/playwright-cli/scripts/post-close-reminder.sh",
+            "if": "Bash(*playwright-cli*close*)"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash __HOME__/.claude/hooks/cmux-subagents.sh",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash __HOME__/.claude/hooks/cmux-subagents.sh",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash __HOME__/.claude/hooks/cmux-subagents.sh",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash __HOME__/.claude/hooks/cmux-subagents.sh",
+            "async": true
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -52,7 +123,8 @@
     "refine@cureapp": true,
     "pinned-actions-manager@cureapp": true,
     "genshijin@genshijin": false,
-    "slack@cureapp": true
+    "slack@cureapp": true,
+    "kawaraban@cureapp": true
   },
   "extraKnownMarketplaces": {
     "cureapp": {
@@ -71,9 +143,23 @@
   "language": "japanese",
   "alwaysThinkingEnabled": false,
   "effortLevel": "xhigh",
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "medium"
+    },
+    "claude-opus-5": {
+      "effortLevel": "medium"
+    },
+    "claude-opus-5-5": {
+      "effortLevel": "medium"
+    }
+  },
   "autoUpdatesChannel": "latest",
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
+  "switchModelsOnFlag": false,
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
   "voiceEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 1756691160246
