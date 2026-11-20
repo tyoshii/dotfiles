@@ -32,6 +32,11 @@
           {
             "type": "command",
             "command": "osascript -e 'display notification \"Claude Code completed tasks.\" with title \"Claude Code\"'"
+          },
+          {
+            "type": "command",
+            "command": "bash __HOME__/.claude/hooks/cmux-subagents.sh",
+            "async": true
           }
         ]
       }

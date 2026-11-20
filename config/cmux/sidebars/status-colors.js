@@ -413,47 +413,72 @@ function workspaceMenu(w) {
 }
 
 // --- agent state ---------------------------------------------------------------
-// 入力待ち=オレンジ / 実行中=緑 / 待機=グレー。agents が無い版や状態でも
+// 入力待ち=オレンジ / 実行中=緑 / 完了(未確認)=青 / 空き=グレー。agents が無い版や状態でも
 // ワークスペースの status レーン（needs-attention / working）で補う。
 const STATES = {
   needs_input: { label: "入力待ち", color: "#FF9F0A", icon: "hand.raised.fill" },
   working:     { label: "実行中",   color: "#30D158", icon: "bolt.fill" },
-  subagents:   { label: "サブ",     color: "#BF5AF2", icon: "person.2.fill" },
-  idle:        { label: "待機",     color: "#8E8E93", icon: "moon.zzz.fill" },
+  subagents:   { label: "裏で実行中", color: "#BF5AF2", icon: "person.2.fill" },
+  done:        { label: "完了",     color: "#0A84FF", icon: "checkmark.circle.fill" },
+  idle:        { label: "空き",     color: "#8E8E93", icon: "moon.zzz.fill" },
 };
 
-// エージェント1つの状態。本体が待機でも裏でサブエージェントが動いていれば subagents。
-// 本体も動いているなら、サブがいても working（実行中）を優先する。
+// エージェント1つの状態。本体が待機でも裏でサブエージェントやバックグラウンドのシェルが
+// 動いていれば subagents（終わると本体が再開するので、空きではない）。
+// 本体も動いているなら、裏に何かいても working（実行中）を優先する。
 // ~/.claude/hooks/cmux-subagents.sh が progress ラベルに載せる件数を読む。
-// 形式 "サブ N件 実行中 · <panelId>=<件数>,..."（status はサイドバーのデータに載らないため progress を使う）
-function subsInfo(w) {
+// 形式 "裏 N件 実行中 · <panelId>=<サブ件数>/<シェル件数>,..."（status はサイドバーのデータに載らないため progress を使う）
+function bgInfo(w) {
   const label = w?.progress?.label ?? "";
-  const m = /^サブ (\d+)件/.exec(label);
-  if (!m) return { total: 0, byPanel: {} };
   const byPanel = {};
-  for (const [, id, n] of label.matchAll(/([0-9A-Fa-f-]{8,})=(\d+)/g)) byPanel[id] = Number(n);
-  return { total: Number(m[1]), byPanel };
+  const total = { subs: 0, shells: 0 };
+  if (!label.startsWith("裏 ")) return { total, byPanel };
+  for (const [, id, sub, sh] of label.matchAll(/([0-9A-Fa-f-]{8,})=(\d+)\/(\d+)/g)) {
+    byPanel[id] = { subs: Number(sub), shells: Number(sh) };
+    total.subs += Number(sub);
+    total.shells += Number(sh);
+  }
+  return { total, byPanel };
 }
-const hookSubs = (w, a) => subsInfo(w).byPanel[a.panelId] ?? 0;
-const runningSubs = (a, w) => Math.max((a.children ?? []).filter((c) => c.running).length, hookSubs(w, a));
+// エージェント1つの裏の件数。サブは cmux が知っている children とフックの多い方
+function agentBg(a, w) {
+  const hook = bgInfo(w).byPanel[a.panelId] ?? { subs: 0, shells: 0 };
+  return { subs: Math.max((a.children ?? []).filter((c) => c.running).length, hook.subs), shells: hook.shells };
+}
+const runningSubs = (a, w) => { const b = agentBg(a, w); return b.subs + b.shells; };
+const bgLabel = ({ subs, shells }) =>
+  [subs > 0 ? `サブ ${subs}件` : "", shells > 0 ? `シェル ${shells}件` : ""].filter(Boolean).join(" · ") + " 実行中";
 function agentKey(a, w) {
   if (a.status === "needs_input") return "needs_input";
   if (a.status === "working") return "working";
   if (runningSubs(a, w) > 0) return "subagents";
+  // 手が空いていても、結果を見ていない（ペインに未読がある）なら「完了」。見たら「空き」
+  if (agentTab(w, a)?.hasUnread) return "done";
   return "idle";
 }
 
-const ORDER = ["needs_input", "working", "subagents", "idle"];
-const liveAgents = (w) => (w?.agents ?? []).filter((a) => a.status !== "ended");
+const ORDER = ["needs_input", "working", "subagents", "done", "idle"];
+// 同じペインで前に起動した Claude のセッションが ended にならず残ることがあるので、
+// ペインごとに一番最近動いたものだけを残す
+function liveAgents(w) {
+  const latest = new Map();
+  for (const a of w?.agents ?? []) {
+    if (a.status === "ended") continue;
+    const key = a.panelId ?? a.id;
+    const cur = latest.get(key);
+    if (!cur || (a.lastActivityAt ?? 0) > (cur.lastActivityAt ?? 0)) latest.set(key, a);
+  }
+  return [...latest.values()];
+}
 
 // ワークスペース全体の状態 = 一番緊急度の高いエージェントの状態。複数いれば件数を付ける。
 function agentState(w) {
   if (!w) return null;
   const keys = liveAgents(w).map((a) => agentKey(a, w));
-  const wsSubs = subsInfo(w).total;
-  // ペイン単位で対応が取れなくても、ワークスペース合計があればサブ扱い（本体が動いていれば実行中のまま）
-  if (wsSubs > 0 && !keys.includes("needs_input") && !keys.includes("working")) {
-    return { ...STATES.subagents, label: `サブ ${wsSubs}件 実行中` };
+  const ws = bgInfo(w).total;
+  // ペイン単位で対応が取れなくても、ワークスペース合計があれば裏で実行中扱い（本体が動いていれば実行中のまま）
+  if (ws.subs + ws.shells > 0 && !keys.includes("needs_input") && !keys.includes("working")) {
+    return { ...STATES.subagents, label: bgLabel(ws) };
   }
   let key = ORDER.find((k) => keys.includes(k));
   if (!key) {
@@ -462,17 +487,39 @@ function agentState(w) {
     else return null;
   }
   if (key === "subagents") {
-    const subs = liveAgents(w).reduce((n, a) => n + runningSubs(a, w), 0);
-    return { ...STATES.subagents, label: `サブ ${subs}件 実行中` };
+    const sum = liveAgents(w).reduce((t, a) => { const b = agentBg(a, w); return { subs: t.subs + b.subs, shells: t.shells + b.shells }; }, { subs: 0, shells: 0 });
+    return { ...STATES.subagents, label: bgLabel(sum) };
   }
   const n = keys.filter((k) => k === key).length;
   return { ...STATES[key], label: n > 1 ? `${STATES[key].label} ${n}` : STATES[key].label };
 }
 
+// メインのバッジの横に出す「完了 N」「空き N」。他のペインが動いている間も、
+// タスクを投げられるペインがあることが一覧で分かるようにする
+function sideStates(w) {
+  const main = agentState(w);
+  if (!main) return [];
+  return ["done", "idle"]
+    .filter((k) => STATES[k].icon !== main.icon)
+    .map((k) => ({ key: k, n: liveAgents(w).filter((a) => agentKey(a, w) === k).length }))
+    .filter((e) => e.n > 0)
+    .map((e) => ({ ...STATES[e.key], key: e.key, label: `${STATES[e.key].label} ${e.n}` }));
+}
+
 // エージェントが動いているペインのタブ名（なければ最初のプロンプト / エージェント名）
+const agentTab = (w, a) => (w?.tabs ?? []).find((t) => t.id === a.panelId);
 function agentTitle(w, a) {
-  const tab = (w?.tabs ?? []).find((t) => t.id === a.panelId);
+  const tab = agentTab(w, a);
   return tab?.title || a.title || a.name || a.kind;
+}
+
+// 完了・空き・裏で実行中のペインはタブ名が前のタスクのままなので、頭に状態を付ける
+function agentRowText(w, a) {
+  const k = agentKey(a, w);
+  const t = agentTitle(w, a);
+  if (k === "done" || k === "idle") return `${STATES[k].label} · ${t}`;
+  if (k === "subagents") return `${bgLabel(agentBg(a, w)).replace(/ 実行中$/, "")} · ${t}`;
+  return t;
 }
 
 // エージェントが動いているペインへ移動する。
@@ -546,7 +593,7 @@ function workspaceRow(w, entry) {
           Spacer({ minLength: 0 }),
         ]).frame(() => ({ height: subTitle(w()) ? 14 : 0 })),
         // 状態バッジ（色付きカプセル）
-        HStack({ spacing: 0 }, [
+        HStack({ spacing: 4 }, [
           HStack({ spacing: 4 }, [
             Image(() => st()?.icon ?? "circle").font(10).color("#000000")
               .opacity(() => (st() ? 1 : 0)),
@@ -559,6 +606,21 @@ function workspaceRow(w, entry) {
             .fixedSize()
             .opacity(() => (st() ? 1 : 0))
             .frame(() => ({ height: st() ? 18 : 0 })),
+          // 完了・空きのペイン数（枠線だけのカプセル）
+          ForEach(
+            { items: () => sideStates(w()), key: (e) => e.key },
+            (e) =>
+              HStack({ spacing: 4 }, [
+                Image(() => e().icon).font(10).color(() => e().color),
+                Text(() => e().label).font(11).bold().color(() => e().color),
+              ])
+                .paddingHorizontal(7)
+                .paddingVertical(1)
+                .borderColor(() => e().color)
+                .borderWidth(1)
+                .cornerRadius(9)
+                .fixedSize()
+          ),
           Spacer(),
         ]),
         // 2ペイン以上でエージェントが動いているときは、エージェントごとの行を出す
@@ -566,8 +628,13 @@ function workspaceRow(w, entry) {
           { items: () => { const ag = liveAgents(w()); return ag.length >= 2 ? ag : []; }, key: (a) => a.id },
           (a) =>
             HStack({ spacing: 6 }, [
-              Circle({ size: 7 }).fill(() => STATES[agentKey(a(), w())].color),
-              Text(() => agentTitle(w(), a())).font(11).color("secondary").lineLimit(1).truncation("tail"),
+              // 空きは中抜きの丸、それ以外は状態色で塗る
+              Circle({ size: 7 })
+                .fill(() => (agentKey(a(), w()) === "idle" ? "clear" : STATES[agentKey(a(), w())].color))
+                .stroke(() => STATES[agentKey(a(), w())].color)
+                .strokeWidth(1.5),
+              Text(() => agentRowText(w(), a())).font(11).color("secondary").lineLimit(1).truncation("tail")
+                .opacity(() => (agentKey(a(), w()) === "idle" ? 0.6 : 1)),
               Spacer({ minLength: 0 }),
             ])
               .paddingVertical(1)
