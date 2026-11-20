@@ -59,12 +59,12 @@ fetch_usage() {
   local creds token resp
   creds=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null || echo "")
   if [ -z "$creds" ]; then
-    echo '{"five_hour":{"utilization":0,"resets_at":""},"seven_day":{"utilization":0,"resets_at":""}}'
+    echo '{"seven_day":{"utilization":0,"resets_at":""}}'
     return
   fi
   token=$(echo "$creds" | jq -r '.claudeAiOauth.accessToken // empty' 2>/dev/null || echo "")
   if [ -z "$token" ]; then
-    echo '{"five_hour":{"utilization":0,"resets_at":""},"seven_day":{"utilization":0,"resets_at":""}}'
+    echo '{"seven_day":{"utilization":0,"resets_at":""}}'
     return
   fi
   resp=$(curl -s --max-time 5 \
@@ -72,10 +72,10 @@ fetch_usage() {
     -H "anthropic-beta: oauth-2025-04-20" \
     -H "Content-Type: application/json" \
     "https://api.anthropic.com/api/oauth/usage" 2>/dev/null || echo "")
-  if echo "$resp" | jq -e '.five_hour' >/dev/null 2>&1; then
+  if echo "$resp" | jq -e '.seven_day' >/dev/null 2>&1; then
     echo "$resp"
   else
-    echo '{"five_hour":{"utilization":0,"resets_at":""},"seven_day":{"utilization":0,"resets_at":""}}'
+    echo '{"seven_day":{"utilization":0,"resets_at":""}}'
   fi
 }
 
@@ -89,14 +89,11 @@ if [ -f "$CACHE_FILE" ]; then
   fi
 fi
 
-if [ -z "$USAGE_JSON" ] || ! echo "$USAGE_JSON" | jq -e '.five_hour' >/dev/null 2>&1; then
+if [ -z "$USAGE_JSON" ] || ! echo "$USAGE_JSON" | jq -e '.seven_day' >/dev/null 2>&1; then
   USAGE_JSON=$(fetch_usage)
   echo "$USAGE_JSON" > "$CACHE_FILE" 2>/dev/null || true
 fi
 
-FIVE_HOUR_PCT=$(echo "$USAGE_JSON" | jq -r '.five_hour.utilization // 0' 2>/dev/null || echo "0")
-FIVE_HOUR_PCT=$(printf "%.0f" "$FIVE_HOUR_PCT" 2>/dev/null || echo "0")
-FIVE_HOUR_RESET=$(echo "$USAGE_JSON" | jq -r '.five_hour.resets_at // ""' 2>/dev/null || echo "")
 
 SEVEN_DAY_PCT=$(echo "$USAGE_JSON" | jq -r '.seven_day.utilization // 0' 2>/dev/null || echo "0")
 SEVEN_DAY_PCT=$(printf "%.0f" "$SEVEN_DAY_PCT" 2>/dev/null || echo "0")
@@ -111,11 +108,10 @@ format_reset_time() {
   # Remove fractional seconds, convert +00:00 → +0000
   local clean
   clean=$(echo "$iso" | sed 's/\.[0-9]*//' | sed 's/\([+-][0-9][0-9]\):\([0-9][0-9]\)$/\1\2/')
-  TZ=Asia/Tokyo date -jf "%Y-%m-%dT%H:%M:%S%z" "$clean" "+$fmt" 2>/dev/null \
+  LC_ALL=C TZ=Asia/Tokyo date -jf "%Y-%m-%dT%H:%M:%S%z" "$clean" "+$fmt" 2>/dev/null \
     | sed 's/AM/am/;s/PM/pm/' || echo "N/A"
 }
 
-FIVE_RESET_STR=$(format_reset_time "$FIVE_HOUR_RESET" "%-l%p")
 SEVEN_RESET_STR=$(format_reset_time "$SEVEN_DAY_RESET" "%b %-d at %-l%p")
 
 # ── ANSI color helpers ───────────────────────────────────────────
@@ -170,14 +166,9 @@ if [ -n "$GIT_BRANCH" ]; then
   fi
 fi
 
-# Line 2: 5-hour rate limit
-FIVE_COLOR=$(color_for_pct "$FIVE_HOUR_PCT")
-FIVE_BAR=$(progress_bar "$FIVE_HOUR_PCT" "$FIVE_COLOR")
-LINE2="\xE2\x8F\xB1\xEF\xB8\x8F ${FIVE_COLOR}5h${C_RESET}  ${FIVE_BAR}  ${FIVE_COLOR}${FIVE_HOUR_PCT}%${C_RESET}  ${C_LABEL}Resets ${FIVE_RESET_STR} (Asia/Tokyo)${C_RESET}"
-
-# Line 3: 7-day rate limit
+# Line 2: 7-day rate limit
 SEVEN_COLOR=$(color_for_pct "$SEVEN_DAY_PCT")
 SEVEN_BAR=$(progress_bar "$SEVEN_DAY_PCT" "$SEVEN_COLOR")
-LINE3="\xF0\x9F\x97\x93\xEF\xB8\x8F ${SEVEN_COLOR}7d${C_RESET}  ${SEVEN_BAR}  ${SEVEN_COLOR}${SEVEN_DAY_PCT}%${C_RESET}  ${C_LABEL}Resets ${SEVEN_RESET_STR} (Asia/Tokyo)${C_RESET}"
+LINE2="\xF0\x9F\x97\x93\xEF\xB8\x8F ${SEVEN_COLOR}7d${C_RESET}  ${SEVEN_BAR}  ${SEVEN_COLOR}${SEVEN_DAY_PCT}%${C_RESET}  ${C_LABEL}Resets ${SEVEN_RESET_STR} (Asia/Tokyo)${C_RESET}"
 
-printf "%b\n%b\n%b\n" "$LINE1" "$LINE2" "$LINE3"
+printf "%b\n%b\n" "$LINE1" "$LINE2"
