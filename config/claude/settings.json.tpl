@@ -27,6 +27,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "python3 __HOME__/.claude/hooks/japanese-guard.py"
+          },
+          {
+            "type": "command",
             "command": "afplay /System/Library/Sounds/Funk.aiff"
           },
           {

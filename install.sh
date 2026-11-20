@@ -57,6 +57,7 @@ link "$DOTFILES/config/cmux/sidebars/status-colors.js" "$HOME/.config/cmux/sideb
 mkdir -p "$HOME/.claude"
 link "$DOTFILES/config/claude/statusline.sh" "$HOME/.claude/statusline.sh"
 link "$DOTFILES/config/claude/hooks/cmux-subagents.sh" "$HOME/.claude/hooks/cmux-subagents.sh"
+link "$DOTFILES/config/claude/hooks/japanese-guard.py" "$HOME/.claude/hooks/japanese-guard.py"
 if [ -f "$HOME/.claude/settings.json" ]; then
   cp "$HOME/.claude/settings.json" "$HOME/.claude/settings.json.bak"
   echo "  backup: ~/.claude/settings.json → ~/.claude/settings.json.bak"
