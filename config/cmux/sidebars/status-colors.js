@@ -423,8 +423,7 @@ const STATES = {
 };
 
 // エージェント1つの状態。本体が待機でも裏でサブエージェントが動いていれば subagents。
-// cmux はサブエージェント待ちの間もメインを working と報告するので、
-// 動いているサブがあれば working より優先して subagents とみなす（メインは実質待っているだけ）。
+// 本体も動いているなら、サブがいても working（実行中）を優先する。
 // ~/.claude/hooks/cmux-subagents.sh が progress ラベルに載せる件数を読む。
 // 形式 "サブ N件 実行中 · <panelId>=<件数>,..."（status はサイドバーのデータに載らないため progress を使う）
 function subsInfo(w) {
@@ -439,12 +438,12 @@ const hookSubs = (w, a) => subsInfo(w).byPanel[a.panelId] ?? 0;
 const runningSubs = (a, w) => Math.max((a.children ?? []).filter((c) => c.running).length, hookSubs(w, a));
 function agentKey(a, w) {
   if (a.status === "needs_input") return "needs_input";
-  if (runningSubs(a, w) > 0) return "subagents";
   if (a.status === "working") return "working";
+  if (runningSubs(a, w) > 0) return "subagents";
   return "idle";
 }
 
-const ORDER = ["needs_input", "subagents", "working", "idle"];
+const ORDER = ["needs_input", "working", "subagents", "idle"];
 const liveAgents = (w) => (w?.agents ?? []).filter((a) => a.status !== "ended");
 
 // ワークスペース全体の状態 = 一番緊急度の高いエージェントの状態。複数いれば件数を付ける。
@@ -452,8 +451,8 @@ function agentState(w) {
   if (!w) return null;
   const keys = liveAgents(w).map((a) => agentKey(a, w));
   const wsSubs = subsInfo(w).total;
-  // ペイン単位で対応が取れなくても、ワークスペース合計があればサブ扱い
-  if (wsSubs > 0 && !keys.includes("needs_input")) {
+  // ペイン単位で対応が取れなくても、ワークスペース合計があればサブ扱い（本体が動いていれば実行中のまま）
+  if (wsSubs > 0 && !keys.includes("needs_input") && !keys.includes("working")) {
     return { ...STATES.subagents, label: `サブ ${wsSubs}件 実行中` };
   }
   let key = ORDER.find((k) => keys.includes(k));
