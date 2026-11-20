@@ -419,45 +419,53 @@ const STATES = {
   needs_input: { label: "入力待ち", color: "#FF9F0A", icon: "hand.raised.fill" },
   working:     { label: "実行中",   color: "#30D158", icon: "bolt.fill" },
   subagents:   { label: "裏で実行中", color: "#BF5AF2", icon: "person.2.fill" },
+  shells:      { label: "シェル待ち", color: "#64D2FF", icon: "terminal.fill" },
   done:        { label: "完了",     color: "#0A84FF", icon: "checkmark.circle.fill" },
   idle:        { label: "空き",     color: "#8E8E93", icon: "moon.zzz.fill" },
 };
 
-// エージェント1つの状態。本体が待機でも裏でサブエージェントやバックグラウンドのシェルが
-// 動いていれば subagents（終わると本体が再開するので、空きではない）。
+// エージェント1つの状態。本体が待機でも裏で動いているものがあれば空きにはしない（終わると本体が再開する）。
+//  - サブエージェント → subagents（Claude が裏で考えて作業している）
+//  - バックグラウンドのシェルだけ → shells（Claude は手を止めてコマンドの終わりを待っているだけ）
 // 本体も動いているなら、裏に何かいても working（実行中）を優先する。
 // ~/.claude/hooks/cmux-subagents.sh が progress ラベルに載せる件数を読む。
-// 形式 "裏 N件 実行中 · <panelId>=<サブ件数>/<シェル件数>,..."（status はサイドバーのデータに載らないため progress を使う）
+// 形式 "裏 N件 実行中 · <panelId>=<サブ件数>/<待ちシェル件数>/<サーバー件数>/<メインの手が空いていれば1>,..."（status はサイドバーのデータに載らないため progress を使う）
+// サーバー（ポートを LISTEN しているシェル）は終わらないので、状態には影響させず行の注記だけにする。
+// cmux は裏でサブエージェントが動いている間、メインのターンが終わっても working のままにするので、
+// フックが Stop で付けた「手が空いた」印があればそちらを信じる
 function bgInfo(w) {
   const label = w?.progress?.label ?? "";
   const byPanel = {};
-  const total = { subs: 0, shells: 0 };
+  const total = { subs: 0, shells: 0, servers: 0 };
   if (!label.startsWith("裏 ")) return { total, byPanel };
-  for (const [, id, sub, sh] of label.matchAll(/([0-9A-Fa-f-]{8,})=(\d+)\/(\d+)/g)) {
-    byPanel[id] = { subs: Number(sub), shells: Number(sh) };
+  for (const [, id, sub, sh, sv = "0", idle = "0"] of label.matchAll(/([0-9A-Fa-f-]{8,})=(\d+)\/(\d+)(?:\/(\d+))?(?:\/(\d+))?/g)) {
+    byPanel[id] = { subs: Number(sub), shells: Number(sh), servers: Number(sv), idle: idle === "1" };
     total.subs += Number(sub);
     total.shells += Number(sh);
+    total.servers += Number(sv);
   }
   return { total, byPanel };
 }
 // エージェント1つの裏の件数。サブは cmux が知っている children とフックの多い方
 function agentBg(a, w) {
-  const hook = bgInfo(w).byPanel[a.panelId] ?? { subs: 0, shells: 0 };
-  return { subs: Math.max((a.children ?? []).filter((c) => c.running).length, hook.subs), shells: hook.shells };
+  const hook = bgInfo(w).byPanel[a.panelId] ?? { subs: 0, shells: 0, servers: 0 };
+  return { subs: Math.max((a.children ?? []).filter((c) => c.running).length, hook.subs), shells: hook.shells, servers: hook.servers, idle: !!hook.idle };
 }
-const runningSubs = (a, w) => { const b = agentBg(a, w); return b.subs + b.shells; };
+const shellLabel = (n) => `シェル ${n}件待ち`;
 const bgLabel = ({ subs, shells }) =>
   [subs > 0 ? `サブ ${subs}件` : "", shells > 0 ? `シェル ${shells}件` : ""].filter(Boolean).join(" · ") + " 実行中";
 function agentKey(a, w) {
   if (a.status === "needs_input") return "needs_input";
-  if (a.status === "working") return "working";
-  if (runningSubs(a, w) > 0) return "subagents";
+  const bg = agentBg(a, w);
+  if (a.status === "working" && !(bg.idle && bg.subs + bg.shells > 0)) return "working";
+  if (bg.subs > 0) return "subagents";
+  if (bg.shells > 0) return "shells";
   // 手が空いていても、結果を見ていない（ペインに未読がある）なら「完了」。見たら「空き」
   if (agentTab(w, a)?.hasUnread) return "done";
   return "idle";
 }
 
-const ORDER = ["needs_input", "working", "subagents", "done", "idle"];
+const ORDER = ["needs_input", "working", "subagents", "shells", "done", "idle"];
 // 同じペインで前に起動した Claude のセッションが ended にならず残ることがあるので、
 // ペインごとに一番最近動いたものだけを残す
 function liveAgents(w) {
@@ -478,7 +486,7 @@ function agentState(w) {
   const ws = bgInfo(w).total;
   // ペイン単位で対応が取れなくても、ワークスペース合計があれば裏で実行中扱い（本体が動いていれば実行中のまま）
   if (ws.subs + ws.shells > 0 && !keys.includes("needs_input") && !keys.includes("working")) {
-    return { ...STATES.subagents, label: bgLabel(ws) };
+    return ws.subs > 0 ? { ...STATES.subagents, label: bgLabel(ws) } : { ...STATES.shells, label: shellLabel(ws.shells) };
   }
   let key = ORDER.find((k) => keys.includes(k));
   if (!key) {
@@ -486,9 +494,9 @@ function agentState(w) {
     else if (w.status === "working") key = "working";
     else return null;
   }
-  if (key === "subagents") {
+  if (key === "subagents" || key === "shells") {
     const sum = liveAgents(w).reduce((t, a) => { const b = agentBg(a, w); return { subs: t.subs + b.subs, shells: t.shells + b.shells }; }, { subs: 0, shells: 0 });
-    return { ...STATES.subagents, label: bgLabel(sum) };
+    return key === "subagents" ? { ...STATES.subagents, label: bgLabel(sum) } : { ...STATES.shells, label: shellLabel(sum.shells) };
   }
   const n = keys.filter((k) => k === key).length;
   return { ...STATES[key], label: n > 1 ? `${STATES[key].label} ${n}` : STATES[key].label };
@@ -517,8 +525,10 @@ function agentTitle(w, a) {
 function agentRowText(w, a) {
   const k = agentKey(a, w);
   const t = agentTitle(w, a);
-  if (k === "done" || k === "idle") return `${STATES[k].label} · ${t}`;
+  const sv = agentBg(a, w).servers;
+  if (k === "done" || k === "idle") return `${STATES[k].label}${sv > 0 ? ` · サーバー ${sv}` : ""} · ${t}`;
   if (k === "subagents") return `${bgLabel(agentBg(a, w)).replace(/ 実行中$/, "")} · ${t}`;
+  if (k === "shells") return `${shellLabel(agentBg(a, w).shells)} · ${t}`;
   return t;
 }
 

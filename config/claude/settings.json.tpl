@@ -48,6 +48,11 @@
           {
             "type": "command",
             "command": "echo '返答・途中経過の報告はすべて日本語で書くこと。'"
+          },
+          {
+            "type": "command",
+            "command": "bash __HOME__/.claude/hooks/cmux-subagents.sh",
+            "async": true
           }
         ]
       }
