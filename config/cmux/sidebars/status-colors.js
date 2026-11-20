@@ -476,12 +476,27 @@ function agentTitle(w, a) {
   return tab?.title || a.title || a.name || a.kind;
 }
 
+// エージェントが動いているペインへ移動する。
+// agents[].surfaceId は surface.focus で not_found になるため、実際の surface ID と一致する panelId を使う
+function focusAgent(w, a) {
+  cmux("surface.focus", { surface_id: a.panelId, workspace_id: w.id });
+}
+
 const shortDir = (d) => (d ?? "").replace(/^\/Users\/[^/]+/, "~");
 
+const dirName = (w) => (w?.directory ?? "").replace(/\/+$/, "").split("/").pop();
+
+function subTitle(w) {
+  const t = displayTitle(w);
+  return t && t !== dirName(w) ? t : "";
+}
+
+// ディレクトリ名は1行目に出すので、ここはブランチと親ディレクトリだけ
 function detailLine(w) {
   if (!w) return "";
   const branch = w.branch ? w.branch + (w.dirty ? "*" : "") : "";
-  return [branch, shortDir(w.directory)].filter(Boolean).join(" • ");
+  const parent = shortDir((w.directory ?? "").replace(/\/+$/, "").replace(/\/[^/]+$/, ""));
+  return [branch, parent].filter(Boolean).join(" • ");
 }
 
 function extraLine(w) {
@@ -500,13 +515,21 @@ function workspaceRow(w, entry) {
         .fill(() => st()?.color ?? "clear")
         .frame({ width: 4, maxHeight: "infinity" }),
       VStack({ spacing: 3, alignment: "leading" }, [
+        // 1行目: ディレクトリ名（一番目立たせる）
         HStack({ spacing: 0 }, [
-          Text(() => displayTitle(w()))
-            .font(13).weight("semibold")
+          Text(() => dirName(w()) || displayTitle(w()))
+            .font(14).weight("bold")
             .lineLimit(1).truncation("tail").marquee()
-            .color(() => (isSelected(w()) ? "#FFFFFF" : "secondary")),
+            .color(() => (isSelected(w()) ? "#FFFFFF" : "primary")),
           Spacer({ minLength: 24 }),
         ]),
+        // 2行目: タブのタイトル（ディレクトリ名と同じなら出さない）
+        HStack({ spacing: 0 }, [
+          Text(() => subTitle(w()))
+            .font(11).color("secondary")
+            .lineLimit(1).truncation("tail"),
+          Spacer({ minLength: 0 }),
+        ]).frame(() => ({ height: subTitle(w()) ? 14 : 0 })),
         // 状態バッジ（色付きカプセル）
         HStack({ spacing: 0 }, [
           HStack({ spacing: 4 }, [
@@ -532,8 +555,11 @@ function workspaceRow(w, entry) {
               Text(() => agentTitle(w(), a())).font(11).color("secondary").lineLimit(1).truncation("tail"),
               Spacer({ minLength: 0 }),
             ])
+              .paddingVertical(1)
+              .cornerRadius(4)
+              .hoverBackground("#7f7f7f33")
               .cursor("pointer")
-              .onTap(() => cmux("surface.focus", { surface_id: a().surfaceId, workspace_id: w().id }))
+              .onTap(() => focusAgent(w(), a()))
         ),
         HStack({ spacing: 0 }, [
           Text(() => detailLine(w())).font(11).monospaced().color("secondary").lineLimit(1).truncation("middle"),
