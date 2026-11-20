@@ -484,7 +484,23 @@ function focusAgent(w, a) {
 
 const shortDir = (d) => (d ?? "").replace(/^\/Users\/[^/]+/, "~");
 
-const dirName = (w) => (w?.directory ?? "").replace(/\/+$/, "").split("/").pop();
+const baseName = (d) => (d ?? "").replace(/\/+$/, "").split("/").pop();
+
+// worktree（vibe が作る <repo>-<branch> 形式）にいるときは元のリポジトリ名を出す
+const WORKTREE_SUFFIX = /-(feature|feat|fix|hotfix|chore|refactor|docs|test|release|renovate|dependabot)-.+$/;
+function dirName(w) {
+  const name = baseName(w?.directory);
+  if (!name) return "";
+  // ブランチ名を - でつないだものが末尾に付いていれば外す
+  const slug = (w.branch ?? "").replace(/[^A-Za-z0-9._-]+/g, "-");
+  if (slug && name.endsWith("-" + slug) && name.length > slug.length + 1) return name.slice(0, -(slug.length + 1));
+  // 同じワークスペースの他のエージェントが元リポジトリにいれば、その名前を使う
+  for (const a of w.agents ?? []) {
+    const b = baseName(a.directory);
+    if (b && b !== name && name.startsWith(b + "-")) return b;
+  }
+  return name.replace(WORKTREE_SUFFIX, "");
+}
 
 function subTitle(w) {
   const t = displayTitle(w);
