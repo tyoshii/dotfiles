@@ -9,6 +9,7 @@
 #    サーバーは起動してからポートを開くまで時間がかかるので、Stop の少し後にもう一度数え直す。
 #  - メインの手が空いたか: cmux は裏でサブエージェントが動いている間、ターンが終わっても working のままにする。
 #    Stop で印を付け、UserPromptSubmit とサブエージェントの終了（メインが再開する）で外す。
+#    cmux に Stop が届かず working のまま残ることもあるので、裏に何もなくても印の時刻をサイドバーへ送る。
 #    ~/.cache/cmux-subagents/<workspace>/idle/<surface>__<session>
 [ -z "$CMUX_WORKSPACE_ID" ] && exit 0
 command -v cmux >/dev/null || exit 0
@@ -28,8 +29,9 @@ dir="$HOME/.cache/cmux-subagents/$CMUX_WORKSPACE_ID"
 shells="$dir/shells"
 idle="$dir/idle"
 mkdir -p "$shells" "$idle"
-# 取りこぼし対策: 3時間以上前のものは終わったとみなす
-find "$dir" -type f -mmin +180 -delete 2>/dev/null
+# 取りこぼし対策: 3時間以上前のものは終わったとみなす（手が空いた印は長く置いておくので 1 日）
+find "$dir" -path "$idle" -prune -o -type f -mmin +180 -delete 2>/dev/null
+find "$idle" -type f -mmin +1440 -delete 2>/dev/null
 
 # このフックを起動した claude プロセスの PID（親をたどって探す）
 claude_pid() {
@@ -102,19 +104,20 @@ esac
 # 送り先:
 #  - set-status claude_subagents: 標準サイドバー用の紫ピル
 #  - set-progress のラベル: 自作サイドバー用（status はサイドバーのデータに載らないため）。
-#    形式 "裏 N件 実行中 · <panelId>=<サブ件数>/<待ちシェル件数>/<サーバー件数>/<メインの手が空いていれば1>,..."
+#    形式 "裏 N件 実行中 · <panelId>=<サブ件数>/<待ちシェル件数>/<サーバー件数>/<メインの手が空いた時刻(epoch秒、空いていなければ0)>,..."
+#    裏に何もなく手が空いた印だけのときは "裏 0件 · ..." で送る
 subs=$(find "$dir" -maxdepth 1 -type f | wc -l | tr -d ' ')
 nshell=$(cat "$shells"/* 2>/dev/null | awk '{s+=$1} END {print s+0}')
 nserve=$(cat "$shells"/* 2>/dev/null | awk '{s+=$2} END {print s+0}')
 total=$((subs + nshell + nserve))
+per=$(
+  {
+    find "$dir" -maxdepth 1 -type f -exec basename {} \; | sed 's/__.*//' | awk '{print $1, 1, 0, 0, 0}'
+    for f in "$shells"/*; do [ -f "$f" ] && echo "$(basename "$f" | sed 's/__.*//') 0 $(cat "$f") 0 0"; done
+    for f in "$idle"/*; do [ -f "$f" ] && echo "$(basename "$f" | sed 's/__.*//') 0 0 0 $(stat -f %m "$f")"; done
+  } | awk '{s[$1]+=$2; b[$1]+=$3; v[$1]+=$4; if ($5 > i[$1]) i[$1]=$5} END {for (k in s) if (s[k]+b[k]+v[k]+i[k] > 0) printf "%s%s=%d/%d/%d/%d", (n++?",":""), k, s[k], b[k], v[k], i[k]}'
+)
 if [ "$total" -gt 0 ]; then
-  per=$(
-    {
-      find "$dir" -maxdepth 1 -type f -exec basename {} \; | sed 's/__.*//' | awk '{print $1, 1, 0, 0, 0}'
-      for f in "$shells"/*; do [ -f "$f" ] && echo "$(basename "$f" | sed 's/__.*//') 0 $(cat "$f") 0 0"; done
-      for f in "$idle"/*; do [ -f "$f" ] && echo "$(basename "$f" | sed 's/__.*//') 0 0 0 1"; done
-    } | awk '{s[$1]+=$2; b[$1]+=$3; v[$1]+=$4; i[$1]+=$5} END {for (k in s) if (s[k]+b[k]+v[k] > 0) printf "%s%s=%d/%d/%d/%d", (n++?",":""), k, s[k], b[k], v[k], (i[k]>0)}'
-  )
   label=""
   [ "$subs" -gt 0 ] && label="サブ ${subs}件"
   [ "$nshell" -gt 0 ] && label="${label:+$label · }シェル ${nshell}件"
@@ -130,6 +133,10 @@ if [ "$total" -gt 0 ]; then
   cmux set-progress 0 --label "裏 ${total}件 実行中 · ${per}" >/dev/null 2>&1
 else
   cmux clear-status claude_subagents >/dev/null 2>&1
-  cmux clear-progress >/dev/null 2>&1
+  if [ -n "$per" ]; then
+    cmux set-progress 0 --label "裏 0件 · ${per}" >/dev/null 2>&1
+  else
+    cmux clear-progress >/dev/null 2>&1
+  fi
 fi
 exit 0

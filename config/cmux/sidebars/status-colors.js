@@ -429,17 +429,18 @@ const STATES = {
 //  - バックグラウンドのシェルだけ → shells（Claude は手を止めてコマンドの終わりを待っているだけ）
 // 本体も動いているなら、裏に何かいても working（実行中）を優先する。
 // ~/.claude/hooks/cmux-subagents.sh が progress ラベルに載せる件数を読む。
-// 形式 "裏 N件 実行中 · <panelId>=<サブ件数>/<待ちシェル件数>/<サーバー件数>/<メインの手が空いていれば1>,..."（status はサイドバーのデータに載らないため progress を使う）
+// 形式 "裏 N件 実行中 · <panelId>=<サブ件数>/<待ちシェル件数>/<サーバー件数>/<メインの手が空いた時刻(epoch秒、0=空いていない)>,..."（status はサイドバーのデータに載らないため progress を使う）
 // サーバー（ポートを LISTEN しているシェル）は終わらないので、状態には影響させず行の注記だけにする。
 // cmux は裏でサブエージェントが動いている間、メインのターンが終わっても working のままにするので、
-// フックが Stop で付けた「手が空いた」印があればそちらを信じる
+// フックが Stop で付けた「手が空いた」印があればそちらを信じる。
+// cmux に Stop が届かず working のまま残ることもあるので、印が cmux の最後の動きより新しければ裏に何もなくても信じる
 function bgInfo(w) {
   const label = w?.progress?.label ?? "";
   const byPanel = {};
   const total = { subs: 0, shells: 0, servers: 0 };
   if (!label.startsWith("裏 ")) return { total, byPanel };
   for (const [, id, sub, sh, sv = "0", idle = "0"] of label.matchAll(/([0-9A-Fa-f-]{8,})=(\d+)\/(\d+)(?:\/(\d+))?(?:\/(\d+))?/g)) {
-    byPanel[id] = { subs: Number(sub), shells: Number(sh), servers: Number(sv), idle: idle === "1" };
+    byPanel[id] = { subs: Number(sub), shells: Number(sh), servers: Number(sv), idleAt: Number(idle) };
     total.subs += Number(sub);
     total.shells += Number(sh);
     total.servers += Number(sv);
@@ -449,7 +450,7 @@ function bgInfo(w) {
 // エージェント1つの裏の件数。サブは cmux が知っている children とフックの多い方
 function agentBg(a, w) {
   const hook = bgInfo(w).byPanel[a.panelId] ?? { subs: 0, shells: 0, servers: 0 };
-  return { subs: Math.max((a.children ?? []).filter((c) => c.running).length, hook.subs), shells: hook.shells, servers: hook.servers, idle: !!hook.idle };
+  return { subs: Math.max((a.children ?? []).filter((c) => c.running).length, hook.subs), shells: hook.shells, servers: hook.servers, idleAt: hook.idleAt ?? 0 };
 }
 const shellLabel = (n) => `シェル ${n}件待ち`;
 const bgLabel = ({ subs, shells }) =>
@@ -457,7 +458,9 @@ const bgLabel = ({ subs, shells }) =>
 function agentKey(a, w) {
   if (a.status === "needs_input") return "needs_input";
   const bg = agentBg(a, w);
-  if (a.status === "working" && !(bg.idle && bg.subs + bg.shells > 0)) return "working";
+  // 印が cmux の最後の動きより古ければ、その後にメインが再開している（シェルの終わりで自動再開した等）
+  const idle = bg.idleAt > 0 && (bg.subs + bg.shells > 0 || bg.idleAt >= (a.lastActivityAt ?? 0));
+  if (a.status === "working" && !idle) return "working";
   if (bg.subs > 0) return "subagents";
   if (bg.shells > 0) return "shells";
   // 手が空いていても、結果を見ていない（ペインに未読がある）なら「完了」。見たら「空き」
